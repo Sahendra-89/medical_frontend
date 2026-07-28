@@ -570,23 +570,18 @@ const MedicineProducts = () => {
       } catch {
         setProducts(STATIC_PRODUCTS);
       } finally {
-const categories = [
-    "All",
-    "Tablets",
-    "Capsules",
-    "Injection",
-    "IV Infusion",
-    "Medical Device",
-    "Surgical Supplies",
-  ];
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const categories = ["All", "Tablets", "Capsules", "Injection", "IV Infusion", "Medical Device", "Surgical Supplies"];
 
   const filtered =
     activeCategory === "All"
       ? products
       : products.filter((p) =>
-          (p.category || "")
-            .toLowerCase()
-            .includes(activeCategory.toLowerCase()),
+          (p.category || "").toLowerCase().includes(activeCategory.toLowerCase())
         );
 
   return (

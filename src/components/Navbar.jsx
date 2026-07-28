@@ -109,6 +109,21 @@ const CATEGORY_TO_MEGA = {
   "elderly-care": "Mobility & Elderly Care",
 };
 
+// ── Images for Mega Menu ──
+const MEGA_MENU_IMAGES = {
+  "Must Haves": { src: "/medicines/micropore_tape.jpg", alt: "Surgical Supplies", label: "Micropore Tape" },
+  "Vitamin Store": { src: "/medicines/tablet_strip.jpg", alt: "Vitamins", label: "A to Z Multivitamins" },
+  "Sexual Wellness": { src: "/medicines/capsule_strip.jpg", alt: "Wellness", label: "Wellness Capsules" },
+  "Personal Care": { src: "/medicines/injection_vial.jpg", alt: "Personal Care", label: "Skincare Vials" },
+  "Homeopathy Care": { src: "/medicines/nebulizer_kit.jpg", alt: "Homeopathy", label: "Respiratory Care" },
+  "Summer Store": { src: "/medicines/iv_infusion.jpg", alt: "Summer", label: "Hydration Infusions" },
+  "Health Food and Drinks": { src: "/medicines/tablet_strip.jpg", alt: "Health Food", label: "Health Supplements" },
+  "Diabetes Essentials": { src: "/medicines/iv_infusion.jpg", alt: "Diabetes", label: "Diabetes Care" },
+  "Ayurvedic Care": { src: "/medicines/capsule_strip.jpg", alt: "Ayurvedic", label: "Ayurvedic Capsules" },
+  "Mother and Baby Care": { src: "/medicines/nebulizer_kit.jpg", alt: "Baby Care", label: "Baby Nebulizers" },
+  "Mobility & Elderly Care": { src: "/medicines/micropore_tape.jpg", alt: "Elderly Care", label: "Support Tapes" },
+};
+
 // Only these 11 categories appear in the Healthcare mega-menu sidebar
 const MEGA_MENU_CAT_IDS = [
   "must-haves",
@@ -654,6 +669,40 @@ const Navbar = () => {
                   <div className="h-full flex flex-col items-center justify-center text-slate-400">
                     <Activity size={48} className="mb-4 opacity-20" />
                     <p>Select a sub-category from the left menu.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Sidebar - Featured Image */}
+              <div className="w-72 bg-slate-50/50 py-6 px-6 hidden lg:flex flex-col border-l border-slate-100">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+                  Featured in {activeMegaCategory}
+                </p>
+                {MEGA_MENU_IMAGES[activeMegaCategory] ? (
+                  <div className="group relative bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                    <div className="relative pt-[100%] bg-white">
+                      <img
+                        src={MEGA_MENU_IMAGES[activeMegaCategory].src}
+                        alt={MEGA_MENU_IMAGES[activeMegaCategory].alt}
+                        className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-4 border-t border-slate-50 bg-gradient-to-b from-white to-slate-50">
+                      <p className="font-bold text-sm text-slate-900 truncate">
+                        {MEGA_MENU_IMAGES[activeMegaCategory].label}
+                      </p>
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(activeMegaCategory)}`}
+                        onClick={() => setActiveDropdown(null)}
+                        className="text-xs font-bold text-medical-blue mt-2 inline-flex items-center gap-1 hover:underline"
+                      >
+                        Shop Now <ChevronRight size={12} />
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-48 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center">
+                    <Pill size={32} className="text-slate-300" />
                   </div>
                 )}
               </div>

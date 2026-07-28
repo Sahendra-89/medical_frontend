@@ -31,19 +31,8 @@ const ProductCard = ({ product }) => {
         {/* Gradient overlay on hover for "Quick Add" */}
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-        {/* Discount Badge */}
-        {discountPercent > 0 && (
-          <div className="absolute top-3 left-0 bg-gradient-to-r from-red-500 to-rose-500 text-white font-black text-[10px] px-2.5 py-1 rounded-r-full shadow-md tracking-wide">
-            {discountPercent}% OFF
-          </div>
-        )}
 
-        {/* Bestseller Badge */}
-        {product.is_bestseller && (
-          <div className="absolute top-3 right-9 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full flex items-center gap-0.5 shadow">
-            <Zap size={8} fill="white" /> BESTSELLER
-          </div>
-        )}
+
 
         {/* Rx Badge */}
         {product.prescription_required && (

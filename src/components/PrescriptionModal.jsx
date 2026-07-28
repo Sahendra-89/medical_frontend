@@ -1,20 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, UploadCloud, FileText, CheckCircle } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, UploadCloud, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import { uploadPrescription } from "../lib/api";
 
 const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
   const [patientName, setPatientName] = useState("");
   const [doctorName, setDoctorName] = useState("");
   const [notes, setNotes] = useState("");
-  const [fileUrl, setFileUrl] = useState(
-    "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400",
-  ); // Mock default image
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [visible, setVisible] = useState(false);
+  const fileInputRef = useRef(null);
 
-  if (!isOpen) return null;
+  // Trigger enter animation when isOpen becomes true
+  useEffect(() => {
+    if (isOpen) {
+      // Slight delay so the DOM mounts before animation starts
+      requestAnimationFrame(() => setVisible(true));
+    } else {
+      setVisible(false);
+    }
+  }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") handleClose();
+    };
+    if (isOpen) document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setVisible(false);
+    // Wait for exit animation before unmounting
+    setTimeout(() => {
+      onClose();
+      // Reset form
+      setPatientName("");
+      setDoctorName("");
+      setNotes("");
+      setSelectedFile(null);
+      setSuccessMsg("");
+    }, 300);
+  };
+
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) setSelectedFile(file);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) setSelectedFile(file);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,155 +68,272 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
     }
     setUploading(true);
     try {
-      const res = await uploadPrescription({
-        fileUrl,
-        patientName,
-        doctorName,
-        notes,
-      });
-      setSuccessMsg(
-        "Prescription uploaded successfully! Pharmacist approval pending.",
-      );
+      const fileUrl =
+        selectedFile
+          ? URL.createObjectURL(selectedFile)
+          : "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400";
+      const res = await uploadPrescription({ fileUrl, patientName, doctorName, notes });
+      setSuccessMsg("Prescription uploaded successfully! Pharmacist approval pending.");
       setTimeout(() => {
         setSuccessMsg("");
         setUploading(false);
-        onSuccess(res.prescription);
-        onClose();
-      }, 2000);
+        if (onSuccess) onSuccess(res.prescription);
+        handleClose();
+      }, 2500);
     } catch (err) {
       alert("Upload failed: " + err.message);
       setUploading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-premium overflow-hidden border border-slate-100 flex flex-col animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="bg-medical-dark text-white p-6 flex justify-between items-center">
-          <div>
-            <h3 className="font-bold text-lg">Upload Prescription</h3>
-            <p className="text-xs text-slate-300 mt-1">
-              Required for Schedule H & X prescription medicines
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-300 hover:text-white rounded-full hover:bg-slate-800 transition"
+    <>
+      <style>{`
+        @keyframes rxOverlayIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes rxOverlayOut {
+          from { opacity: 1; }
+          to   { opacity: 0; }
+        }
+        @keyframes rxCardIn {
+          from { opacity: 0; transform: scale(0.88) translateY(32px); }
+          to   { opacity: 1; transform: scale(1)   translateY(0); }
+        }
+        @keyframes rxCardOut {
+          from { opacity: 1; transform: scale(1)   translateY(0); }
+          to   { opacity: 0; transform: scale(0.88) translateY(32px); }
+        }
+        @keyframes rxSuccessIn {
+          0%   { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+          60%  { transform: scale(1.15) rotate(4deg); }
+          100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes rxPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+          50%       { box-shadow: 0 0 0 10px rgba(59,130,246,0); }
+        }
+        .rx-overlay {
+          animation: ${visible ? "rxOverlayIn 0.28s ease forwards" : "rxOverlayOut 0.28s ease forwards"};
+        }
+        .rx-card {
+          animation: ${visible ? "rxCardIn 0.32s cubic-bezier(0.34,1.56,0.64,1) forwards" : "rxCardOut 0.28s ease forwards"};
+        }
+        .rx-success-icon {
+          animation: rxSuccessIn 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        .rx-submit-btn {
+          animation: rxPulse 2s infinite;
+        }
+        .rx-dropzone-active {
+          border-color: #3b82f6 !important;
+          background: #eff6ff !important;
+          transform: scale(1.01);
+        }
+        .rx-input:focus {
+          border-color: #3b82f6;
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .rx-close-btn:hover {
+          background: rgba(255,255,255,0.15);
+          transform: rotate(90deg);
+        }
+      `}</style>
+
+      {/* Backdrop */}
+      <div
+        className="rx-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: "rgba(15,23,42,0.65)", backdropFilter: "blur(6px)" }}
+        onClick={(e) => e.target === e.currentTarget && handleClose()}
+      >
+        {/* Modal Card */}
+        <div
+          className="rx-card bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+          style={{ maxHeight: "92vh" }}
+        >
+          {/* ── Header ── */}
+          <div
+            className="p-5 flex justify-between items-center flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)" }}
           >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[80vh]">
-          {successMsg ? (
-            <div className="py-12 flex flex-col items-center justify-center text-center">
-              <CheckCircle
-                size={60}
-                className="text-green-600 mb-4 animate-bounce"
-              />
-              <h4 className="font-bold text-lg text-slate-900">{successMsg}</h4>
-              <p className="text-xs text-slate-500 mt-2 max-w-xs">
-                Our licensed pharmacist will review and approve your
-                prescription shortly.
-              </p>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(59,130,246,0.2)" }}
+              >
+                <FileText size={20} className="text-blue-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base leading-tight">
+                  Upload Prescription
+                </h3>
+                <p className="text-xs mt-0.5" style={{ color: "rgba(148,163,184,1)" }}>
+                  Required for Schedule H &amp; X medicines
+                </p>
+              </div>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* File Dropzone */}
-              <div className="border-2 border-dashed border-slate-200 hover:border-medical-blue bg-slate-50 rounded-2xl p-6 text-center cursor-pointer transition group">
-                <UploadCloud
-                  size={40}
-                  className="mx-auto text-slate-400 group-hover:text-medical-blue transition mb-2"
-                />
-                <p className="text-xs font-semibold text-slate-700">
-                  Click to upload or drag & drop prescription
+            <button
+              onClick={handleClose}
+              className="rx-close-btn w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white transition-all duration-200"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* ── Body ── */}
+          <div className="p-6 overflow-y-auto flex-1">
+            {successMsg ? (
+              /* Success State */
+              <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+                <div className="rx-success-icon">
+                  <div
+                    className="w-20 h-20 rounded-full flex items-center justify-center mb-1"
+                    style={{ background: "linear-gradient(135deg,#d1fae5,#a7f3d0)" }}
+                  >
+                    <CheckCircle size={48} className="text-emerald-600" />
+                  </div>
+                </div>
+                <h4 className="font-bold text-lg text-slate-900 mt-2">Upload Successful!</h4>
+                <p className="text-sm text-slate-600 max-w-xs leading-relaxed">{successMsg}</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Our licensed pharmacist will review your prescription shortly.
                 </p>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Supports JPG, PNG, PDF (Max 10MB)
-                </p>
-                <div className="mt-3 inline-flex items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium text-slate-600 shadow-sm">
-                  <FileText size={14} className="text-medical-blue" />{" "}
-                  sample_rx_2026.jpg
-                </div>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-              {/* Form Fields */}
-              <div className="space-y-3 pt-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Patient Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Enter patient's full name"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-medical-blue focus:bg-white transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Doctor Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Dr. Harsh"
-                    value={doctorName}
-                    onChange={(e) => setDoctorName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-medical-blue focus:bg-white transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Pharmacist Notes / Refill Instructions
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Add any specific instructions for the pharmacist or monthly refill details..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-medical-blue focus:bg-white transition resize-none"
-                  ></textarea>
-                </div>
-              </div>
-
-              {/* Warning */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-[11px] text-amber-800 leading-relaxed">
-                <span className="font-bold block mb-0.5">
-                  ⚠️ Pharmacist Verification Notice:
-                </span>
-                As per the Drugs & Cosmetics Act, all prescription orders are
-                subject to verification by our registered pharmacist before
-                dispatch.
-              </div>
-
-              {/* Submit */}
-              <div className="pt-2 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition"
+                {/* ── Dropzone ── */}
+                <div
+                  className={`rx-dropzone border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 ${dragOver ? "rx-dropzone-active" : "border-slate-200 bg-slate-50 hover:border-blue-400 hover:bg-blue-50"}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleFileDrop}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={uploading}
-                  className="px-6 py-2.5 rounded-xl bg-medical-blue text-white font-bold text-xs hover:bg-blue-600 transition shadow-md flex items-center gap-2"
-                >
-                  {uploading ? "Uploading..." : "Submit Prescription"}
-                </button>
-              </div>
-            </form>
-          )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <UploadCloud
+                    size={38}
+                    className={`mx-auto mb-2 transition-colors duration-200 ${dragOver ? "text-blue-500" : "text-slate-400"}`}
+                  />
+                  {selectedFile ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-xs font-bold text-blue-600">{selectedFile.name}</span>
+                      <span className="text-[10px] text-slate-400">
+                        {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-xs font-semibold text-slate-700">
+                        Click to upload or drag &amp; drop
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        JPG, PNG, PDF — Max 10 MB
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* ── Fields ── */}
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Patient Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter patient's full name"
+                      value={patientName}
+                      onChange={(e) => setPatientName(e.target.value)}
+                      className="rx-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Doctor Name <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Dr. Sharma"
+                      value={doctorName}
+                      onChange={(e) => setDoctorName(e.target.value)}
+                      className="rx-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Notes / Refill Instructions
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Add specific instructions for the pharmacist or refill details..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="rx-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none transition-all duration-200 resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* ── Warning ── */}
+                <div className="flex gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-[11px] text-amber-800 leading-relaxed">
+                  <AlertCircle size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                  <span>
+                    <span className="font-bold">Pharmacist Verification Notice: </span>
+                    As per the Drugs &amp; Cosmetics Act, all prescription orders are subject
+                    to verification by our registered pharmacist before dispatch.
+                  </span>
+                </div>
+
+                {/* ── Actions ── */}
+                <div className="flex justify-end gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-100 transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="rx-submit-btn px-6 py-2.5 rounded-xl text-white font-bold text-xs transition-all duration-200 shadow-md flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    style={{ background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" }}
+                  >
+                    {uploading ? (
+                      <>
+                        <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" opacity="0.25"/>
+                          <path d="M21 12a9 9 0 0 1-9 9"/>
+                        </svg>
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud size={14} />
+                        Submit Prescription
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

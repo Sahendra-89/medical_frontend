@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
   Tag,
   Package,
+  Siren,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -82,6 +83,14 @@ const NAV_LINKS = [
     icon: <BookOpen size={14} />,
     dot: false,
     mega: false,
+  },
+  {
+    label: "Book Ambulance",
+    href: "/ambulance",
+    icon: <Siren size={14} />,
+    dot: true,
+    mega: false,
+    emergency: true,
   },
 ];
 
@@ -557,15 +566,28 @@ const Navbar = () => {
                   <Link
                     href={link.href}
                     onMouseEnter={() => setActiveDropdown(null)}
-                    className="flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-bold text-slate-700 hover:text-medical-blue border-b-2 border-transparent hover:border-medical-blue hover:bg-slate-50 transition-all duration-200"
+                    className={`flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-bold border-b-2 border-transparent transition-all duration-200 ${
+                      link.emergency
+                        ? "text-red-600 hover:text-red-700 hover:border-red-500 hover:bg-red-50"
+                        : "text-slate-700 hover:text-medical-blue hover:border-medical-blue hover:bg-slate-50"
+                    }`}
                   >
                     {link.dot && (
-                      <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 animate-pulse" />
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        link.emergency ? "bg-red-500 animate-pulse" : "bg-red-500 animate-pulse"
+                      }`} />
                     )}
-                    <span className="text-slate-400 group-hover:text-medical-blue transition-colors">
+                    <span className={`transition-colors ${
+                      link.emergency ? "text-red-500" : "text-slate-400 group-hover:text-medical-blue"
+                    }`}>
                       {link.icon}
                     </span>
                     {link.label}
+                    {link.emergency && (
+                      <span className="ml-1 text-[9px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">
+                        24/7
+                      </span>
+                    )}
                   </Link>
                 )}
               </div>
@@ -665,15 +687,24 @@ const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenu(false)}
-                className="py-2.5 px-2 text-sm font-medium text-slate-700 hover:text-medical-blue flex items-center gap-2"
+                className={`py-2.5 px-2 text-sm font-medium flex items-center gap-2 rounded-lg transition ${
+                  link.emergency
+                    ? "text-red-600 bg-red-50 hover:bg-red-100 font-bold"
+                    : "text-slate-700 hover:text-medical-blue"
+                }`}
               >
-                <span className="text-medical-blue opacity-70">
+                <span className={link.emergency ? "text-red-500" : "text-medical-blue opacity-70"}>
                   {link.icon}
                 </span>
-                {link.dot && (
+                {link.dot && !link.emergency && (
                   <span className="w-2 h-2 bg-red-500 rounded-full" />
                 )}
                 {link.label}
+                {link.emergency && (
+                  <span className="ml-auto text-[9px] font-black bg-red-500 text-white px-2 py-0.5 rounded-full animate-pulse">
+                    24/7
+                  </span>
+                )}
               </Link>
             ))}
           </div>

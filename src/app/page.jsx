@@ -10,6 +10,7 @@ import { getProducts } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import MedicineProducts from '../components/MedicineProducts';
 import FeaturesAndTestimonials from '../components/FeaturesAndTestimonials';
+import PrescriptionModal from '../components/PrescriptionModal';
 
 const HOME_ICONS = [
   { img: '💊', title: 'Medicine', sub: 'SAVE 27%', link: '/shop?category=medicine' },
@@ -152,11 +153,23 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rxOpen, setRxOpen] = useState(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
   const router = useRouter();
+
+  // ── Auto-open prescription popup after 2s (once per session) ──
+  useEffect(() => {
+    const alreadyShown = sessionStorage.getItem('rx_popup_shown');
+    if (alreadyShown) return;
+    const timer = setTimeout(() => {
+      setRxOpen(true);
+      sessionStorage.setItem('rx_popup_shown', '1');
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -191,61 +204,51 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* ── SEARCH & ICONS SECTION ── */}
-      <section className="pt-10 pb-8 px-4 sm:px-8 max-w-7xl mx-auto w-full">
+      <section className="pt-8 sm:pt-10 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Title and Upload Link */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800">
             What are you looking for?
           </h1>
-          <Link href="/upload-prescription" className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-black transition mt-4 md:mt-0">
-            <FileText size={18} className="text-slate-500" />
-            <span>Order with prescription. <span className="text-black">UPLOAD NOW &gt;</span></span>
+          <Link
+            href="/upload-prescription"
+            className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-black transition flex-shrink-0 group"
+          >
+            <FileText size={16} className="text-slate-500 group-hover:text-blue-600 transition" />
+            <span>Order with prescription. <span className="text-black group-hover:text-blue-600 transition">UPLOAD NOW &gt;</span></span>
           </Link>
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto mb-12">
-          <div className="flex items-center bg-white border border-slate-300 rounded-full shadow-sm overflow-hidden hover:shadow-md transition pl-4">
-            <Search size={20} className="text-slate-400 flex-shrink-0" />
+        <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto mb-10">
+          <div className="flex items-center bg-white border border-slate-300 rounded-full shadow-sm overflow-hidden hover:shadow-md transition pl-3 sm:pl-4">
+            <Search size={18} className="text-slate-400 flex-shrink-0" />
             <input
               type="text"
-              placeholder="Search for Medicine"
+              placeholder="Search for Medicine, Brands..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full py-3.5 px-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
+              className="w-full py-3 sm:py-3.5 px-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
             />
-            <button type="submit" className="bg-black hover:bg-slate-800 text-white font-bold px-6 sm:px-8 py-3 m-1 rounded-full text-sm transition flex-shrink-0">
+            <button type="submit" className="bg-black hover:bg-slate-800 text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 m-1 rounded-full text-sm transition flex-shrink-0">
               Search
             </button>
           </div>
         </form>
-
-        {/* Icon Grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-4 text-center">
-          {HOME_ICONS.map((item, idx) => (
-            <Link key={idx} href={item.link} className="flex flex-col items-center group">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white border border-slate-100 rounded-xl shadow-sm flex items-center justify-center text-3xl mb-3 group-hover:shadow-md transition">
-                {item.img}
-              </div>
-              <span className="text-xs sm:text-sm font-semibold text-slate-800 leading-tight group-hover:text-teal-600 transition">{item.title}</span>
-              {item.sub && <span className="text-[10px] sm:text-xs font-bold text-red-500 mt-1">{item.sub}</span>}
-            </Link>
-          ))}
-        </div>
       </section>
 
       {/* ── FEATURED MEDICINE PRODUCTS ── */}
       <MedicineProducts />
 
       {/* ── ALL PRODUCTS CATALOG ── */}
-      <section className="py-14 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="flex justify-between items-end mb-8">
+      <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-end mb-6 sm:mb-8 gap-2">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">Explore Our Catalog</h2>
-              <p className="text-sm text-slate-500 mt-1">Browse all our premium healthcare and wellness products</p>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900">Explore Our Catalog</h2>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Browse all our premium healthcare and wellness products</p>
             </div>
-            <Link href="/shop" className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1">
+            <Link href="/shop" className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1 flex-shrink-0">
               Shop Page <ChevronRight size={14} />
             </Link>
           </div>
@@ -290,6 +293,13 @@ export default function HomePage() {
 
       {/* ── FEATURES & TESTIMONIALS ── */}
       <FeaturesAndTestimonials />
+
+      {/* ── PRESCRIPTION MODAL POPUP ── */}
+      <PrescriptionModal
+        isOpen={rxOpen}
+        onClose={() => setRxOpen(false)}
+        onSuccess={() => setRxOpen(false)}
+      />
     </div>
   );
 }

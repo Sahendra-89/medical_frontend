@@ -25,26 +25,11 @@ import {
    Reusable: Section Heading with blue line
 ───────────────────────────────────────── */
 const SectionHeading = ({ children }) => (
-  <div style={{ marginBottom: "18px" }}>
-    <h4
-      style={{
-        color: "#1e3a6e",
-        fontWeight: "700",
-        fontSize: "15px",
-        margin: "0 0 8px 0",
-        letterSpacing: "0.2px",
-      }}
-    >
+  <div className="mb-4">
+    <h4 className="text-[#1e3a6e] font-bold text-[15px] mb-2 tracking-[0.2px]">
       {children}
     </h4>
-    <div
-      style={{
-        width: "36px",
-        height: "3px",
-        background: "linear-gradient(90deg, #f97316 0%, #fb923c 100%)",
-        borderRadius: "2px",
-      }}
-    />
+    <div className="w-9 h-[3px] bg-gradient-to-r from-orange-500 to-orange-400 rounded-sm" />
   </div>
 );
 
@@ -52,20 +37,7 @@ const SectionHeading = ({ children }) => (
    Reusable: Contact icon badge
 ───────────────────────────────────────── */
 const ContactBadge = ({ icon }) => (
-  <div
-    style={{
-      width: "32px",
-      height: "32px",
-      borderRadius: "50%",
-      background: "#eff6ff",
-      border: "1px solid #bfdbfe",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0,
-      marginTop: "2px",
-    }}
-  >
+  <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
     {icon}
   </div>
 );
@@ -75,480 +47,209 @@ const ContactBadge = ({ icon }) => (
 ───────────────────────────────────────── */
 const Footer = () => {
   return (
-    <footer
-      style={{
-        background: "#ffffff",
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        borderTop: "1px solid #e2e8f0",
-      }}
-    >
+    <footer className="bg-white border-t border-slate-200 font-sans">
       {/* ══ Top accent line ══ */}
-      <div
-        style={{
-          height: "4px",
-          background:
-            "linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #f97316 100%)",
-        }}
-      />
+      <div className="h-1 bg-gradient-to-r from-[#1e3a8a] via-[#2563eb] to-orange-500" />
 
       {/* ══ Main Grid ══ */}
-      <div
-        style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "44px 32px 36px",
-          display: "grid",
-          gridTemplateColumns: "2fr 1fr 1fr 1.3fr",
-          gap: "48px",
-          borderBottom: "1px solid #e2e8f0",
-        }}
-      >
-        {/* ── Brand Column ── */}
-        <div>
-          {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              marginBottom: "16px",
-              transition: "opacity 0.2s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >
-            <img
-              src="/logo.png"
-              alt="MediCure"
-              style={{
-                height: "80px",
-                width: "auto",
-                objectFit: "contain",
-                display: "block",
-              }}
-            />
-          </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 border-b border-slate-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
 
-          {/* Description */}
-          <p
-            style={{
-              fontSize: "13.5px",
-              color: "#475569",
-              lineHeight: "1.8",
-              marginBottom: "18px",
-              maxWidth: "300px",
-            }}
-          >
-            MediCure is a leading B2C &amp; B2B pharmaceutical e-commerce
-            platform offering genuine medicines, devices, and wellness products
-            across Wellness City.
-          </p>
-
-          {/* License Box */}
-          <div
-            style={{
-              background: "#f0f7ff",
-              border: "1px solid #bfdbfe",
-              borderRadius: "10px",
-              padding: "14px 16px",
-              marginBottom: "20px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "7px",
-                marginBottom: "10px",
-              }}
+          {/* ── Brand Column ── */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="inline-flex items-center mb-4 hover:opacity-85 transition-opacity"
             >
-              <ShieldCheck size={15} color="#2563eb" />
-              <span
-                style={{
-                  color: "#1e3a6e",
-                  fontWeight: "700",
-                  fontSize: "13px",
-                }}
-              >
-                Legal Compliance &amp; Licenses
-              </span>
+              <img
+                src="/logo.png"
+                alt="Paridhi Pharma"
+                className="h-16 sm:h-20 w-auto object-contain block"
+              />
+            </Link>
+
+            {/* Description */}
+            <p className="text-[13.5px] text-slate-500 leading-[1.8] mb-4 max-w-xs">
+              MediCure is a leading B2C &amp; B2B pharmaceutical e-commerce
+              platform offering genuine medicines, devices, and wellness products
+              across Wellness City.
+            </p>
+
+            {/* License Box */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3.5 mb-5">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <ShieldCheck size={15} color="#2563eb" />
+                <span className="text-[#1e3a6e] font-bold text-[13px]">
+                  Legal Compliance &amp; Licenses
+                </span>
+              </div>
+              {[
+                [
+                  "Drug Licence Details",
+                  "Form 20: RLF20HR2025001073, Form 20B: WLF20B2025HR000348, Form 21: RLF21HR2025001068, Form 21B: WLF21B2025HR000346, GSTIN: ( 06ESAPS2100F1Z9)",
+                ],
+              ].map(([k, v]) => (
+                <div
+                  key={k}
+                  className="text-[12.5px] text-slate-500 mb-0.5 leading-[1.65]"
+                >
+                  <span className="text-slate-400">{k}: </span>
+                  <span className="text-[#1e3a6e] font-bold">{v}</span>
+                </div>
+              ))}
             </div>
-            {[
-              ["Drug License", "HR-GUR-2026-98765"],
-              ["FSSAI License", "10826005001234"],
-              ["GSTIN", "06AAAAA0000A1Z5"],
-              ["Pharmacist", "RITESH (B.Pharm)"],
-            ].map(([k, v]) => (
-              <div
-                key={k}
-                style={{
-                  fontSize: "12.5px",
-                  color: "#475569",
-                  marginBottom: "3px",
-                  lineHeight: "1.65",
-                }}
-              >
-                <span style={{ color: "#64748b" }}>{k}: </span>
-                <span style={{ color: "#1e3a6e", fontWeight: "700" }}>{v}</span>
-              </div>
-            ))}
-          </div>
 
-          {/* Social Icons */}
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            {[
-              {
-                icon: <Facebook size={17} />,
-                href: "#",
-                label: "Facebook",
-                hoverBg: "#1877f2",
-              },
-              {
-                icon: <Instagram size={17} />,
-                href: "#",
-                label: "Instagram",
-                hoverBg: "#e1306c",
-              },
-              {
-                icon: <Twitter size={17} />,
-                href: "#",
-                label: "Twitter",
-                hoverBg: "#1da1f2",
-              },
-              {
-                icon: <Youtube size={17} />,
-                href: "#",
-                label: "YouTube",
-                hoverBg: "#ff0000",
-              },
-            ].map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                style={{
-                  width: "38px",
-                  height: "38px",
-                  borderRadius: "8px",
-                  background: "#f1f5f9",
-                  border: "1px solid #e2e8f0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#64748b",
-                  textDecoration: "none",
-                  transition: "all 0.22s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = s.hoverBg;
-                  e.currentTarget.style.color = "#fff";
-                  e.currentTarget.style.borderColor = s.hoverBg;
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#f1f5f9";
-                  e.currentTarget.style.color = "#64748b";
-                  e.currentTarget.style.borderColor = "#e2e8f0";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                {s.icon}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Categories ── */}
-        <div>
-          <SectionHeading>Categories</SectionHeading>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "11px",
-            }}
-          >
-            {[
-              {
-                label: "OTC Medicines",
-                href: "/shop?category=otc",
-                icon: <Pill size={14} />,
-              },
-              {
-                label: "Prescription Rx",
-                href: "/shop?category=prescription",
-                icon: <FileText size={14} />,
-              },
-              {
-                label: "Medical Devices",
-                href: "/shop?category=devices",
-                icon: <Monitor size={14} />,
-              },
-              {
-                label: "Wellness & Nutrition",
-                href: "/shop?category=wellness",
-                icon: <Salad size={14} />,
-              },
-              {
-                label: "Personal Care",
-                href: "/shop?category=personal-care",
-                icon: <ShoppingBag size={14} />,
-              },
-              {
-                label: "Baby Care",
-                href: "/shop?category=baby-care",
-                icon: <Baby size={14} />,
-              },
-            ].map(({ label, href, icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    color: "#475569",
-                    textDecoration: "none",
-                    fontSize: "13.5px",
-                    transition: "all 0.2s ease",
-                  }}
+            {/* Social Icons */}
+            <div className="flex gap-2.5 items-center">
+              {[
+                { icon: <Facebook size={17} />, href: "#", label: "Facebook", hoverBg: "#1877f2" },
+                { icon: <Instagram size={17} />, href: "#", label: "Instagram", hoverBg: "#e1306c" },
+                { icon: <Twitter size={17} />, href: "#", label: "Twitter", hoverBg: "#1da1f2" },
+                { icon: <Youtube size={17} />, href: "#", label: "YouTube", hoverBg: "#ff0000" },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#2563eb";
-                    e.currentTarget.style.paddingLeft = "3px";
+                    e.currentTarget.style.background = s.hoverBg;
+                    e.currentTarget.style.color = "#fff";
+                    e.currentTarget.style.borderColor = s.hoverBg;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "#475569";
-                    e.currentTarget.style.paddingLeft = "0";
+                    e.currentTarget.style.background = "";
+                    e.currentTarget.style.color = "";
+                    e.currentTarget.style.borderColor = "";
                   }}
                 >
-                  <span style={{ color: "#2563eb", flexShrink: 0 }}>
-                    {icon}
-                  </span>
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* ── Quick Links ── */}
-        <div>
-          <SectionHeading>Quick Links</SectionHeading>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "11px",
-            }}
-          >
-            {[
-              ["All Products", "/shop"],
-              ["B2B / Bulk Orders", "/shop?b2b=true"],
-              ["View Cart", "/cart"],
-              ["My Dashboard", "/dashboard"],
-              ["Health Blog", "/blog"],
-              ["About Us", "/about"],
-              ["Contact Us", "/contact"],
-            ].map(([label, href]) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    color: "#475569",
-                    textDecoration: "none",
-                    fontSize: "13.5px",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#2563eb";
-                    e.currentTarget.style.paddingLeft = "3px";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "#475569";
-                    e.currentTarget.style.paddingLeft = "0";
-                  }}
-                >
-                  <ChevronRight
-                    size={13}
-                    color="#2563eb"
-                    style={{ flexShrink: 0 }}
-                  />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* ── Contact & Support ── */}
-        <div>
-          <SectionHeading>Contact &amp; Support</SectionHeading>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "14px",
-            }}
-          >
-            {/* Address */}
-            <li
-              style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
-            >
-              <ContactBadge icon={<MapPin size={14} color="#2563eb" />} />
-              <span
-                style={{
-                  fontSize: "13px",
-                  color: "#475569",
-                  lineHeight: "1.65",
-                }}
-              >
-                123 Health Ave,
-                <br />
-                Gurugram , 122001, Haryana, India
-              </span>
-            </li>
-
-            {/* Phone */}
-            <li
-              style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
-            >
-              <ContactBadge icon={<PhoneCall size={14} color="#2563eb" />} />
-              <div>
-                <a
-                  href="tel:8285508282"
-                  style={{
-                    color: "#475569",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    display: "block",
-                    lineHeight: "1.65",
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#2563eb")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "#475569")
-                  }
-                >
-                  8285508282
+                  {s.icon}
                 </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Categories ── */}
+          <div>
+            <SectionHeading>Categories</SectionHeading>
+            <ul className="flex flex-col gap-3 list-none p-0 m-0">
+              {[
+                { label: "OTC Medicines", href: "/shop?category=otc", icon: <Pill size={14} /> },
+                { label: "Prescription Rx", href: "/shop?category=prescription", icon: <FileText size={14} /> },
+                { label: "Medical Devices", href: "/shop?category=devices", icon: <Monitor size={14} /> },
+                { label: "Wellness & Nutrition", href: "/shop?category=wellness", icon: <Salad size={14} /> },
+                { label: "Personal Care", href: "/shop?category=personal-care", icon: <ShoppingBag size={14} /> },
+                { label: "Baby Care", href: "/shop?category=baby-care", icon: <Baby size={14} /> },
+              ].map(({ label, href, icon }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="flex items-center gap-2 text-slate-500 no-underline text-[13.5px] transition-all duration-200 hover:text-blue-600 hover:pl-1"
+                  >
+                    <span className="text-blue-600 flex-shrink-0">{icon}</span>
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Quick Links ── */}
+          <div>
+            <SectionHeading>Quick Links</SectionHeading>
+            <ul className="flex flex-col gap-3 list-none p-0 m-0">
+              {[
+                ["All Products", "/shop"],
+                ["B2B / Bulk Orders", "/shop?b2b=true"],
+                ["View Cart", "/cart"],
+                ["My Dashboard", "/dashboard"],
+                ["Health Blog", "/blog"],
+                ["About Us", "/about"],
+                ["Contact Us", "/contact"],
+              ].map(([label, href]) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="flex items-center gap-1.5 text-slate-500 no-underline text-[13.5px] transition-all duration-200 hover:text-blue-600 hover:pl-1"
+                  >
+                    <ChevronRight size={13} color="#2563eb" className="flex-shrink-0" />
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Contact & Support ── */}
+          <div>
+            <SectionHeading>Contact &amp; Support</SectionHeading>
+            <ul className="flex flex-col gap-3.5 list-none p-0 m-0">
+              {/* Address */}
+              <li className="flex items-start gap-2.5">
+                <ContactBadge icon={<MapPin size={14} color="#2563eb" />} />
+                <span className="text-[13px] text-slate-500 leading-[1.65]">
+                  Shop No. 4, Mohmadpur Jharsa Road, Sector 39, Near Police Chowki
+                  <br />
+                  Gurugram, Haryana – 122003 India
+                </span>
+              </li>
+
+              {/* Phone */}
+              <li className="flex items-start gap-2.5">
+                <ContactBadge icon={<PhoneCall size={14} color="#2563eb" />} />
+                <div>
+                  <a
+                    href="tel:8285508282"
+                    className="text-slate-500 no-underline text-[13px] block leading-[1.65] transition-colors hover:text-blue-600"
+                  >
+                    8285508282
+                  </a>
+                  <a
+                    href="tel:+918376868282"
+                    className="text-slate-500 no-underline text-[13px] block leading-[1.65] transition-colors hover:text-blue-600"
+                  >
+                    +91 8376868282
+                  </a>
+                </div>
+              </li>
+
+              {/* Email */}
+              <li className="flex items-start gap-2.5">
+                <ContactBadge icon={<Mail size={14} color="#2563eb" />} />
                 <a
-                  href="tel:+918376868282"
-                  style={{
-                    color: "#475569",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    display: "block",
-                    lineHeight: "1.65",
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#2563eb")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "#475569")
-                  }
+                  href="mailto:paridhipharmasurgical@gmail.com"
+                  className="text-slate-500 no-underline text-[13px] leading-[1.65] break-all transition-colors hover:text-blue-600"
                 >
-                  +91 8376868282
+                  paridhipharmasurgical@gmail.com
                 </a>
-              </div>
-            </li>
+              </li>
 
-            {/* Email */}
-            <li
-              style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
-            >
-              <ContactBadge icon={<Mail size={14} color="#2563eb" />} />
-              <a
-                href="mailto:paridhipharmasurgical@gmail.com"
-                style={{
-                  color: "#475569",
-                  textDecoration: "none",
-                  fontSize: "13px",
-                  lineHeight: "1.65",
-                  wordBreak: "break-all",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#2563eb")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#475569")}
-              >
-                paridhipharmasurgical@gmail.com
-              </a>
-            </li>
+              {/* Hours */}
+              <li className="flex items-start gap-2.5">
+                <ContactBadge icon={<Clock size={14} color="#2563eb" />} />
+                <span className="text-[13px] text-slate-500 leading-[1.65]">
+                  24/7 Online &nbsp;·&nbsp; Store: 8 AM – 10 PM
+                </span>
+              </li>
+            </ul>
+          </div>
 
-            {/* Hours */}
-            <li
-              style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
-            >
-              <ContactBadge icon={<Clock size={14} color="#2563eb" />} />
-              <span
-                style={{
-                  fontSize: "13px",
-                  color: "#475569",
-                  lineHeight: "1.65",
-                }}
-              >
-                24/7 Online &nbsp;·&nbsp; Store: 8 AM – 10 PM
-              </span>
-            </li>
-          </ul>
         </div>
       </div>
 
       {/* ══ Bottom Bar ══ */}
-      <div
-        style={{
-          background: "#0f2652",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "16px 32px",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "13px",
-              color: "#94a3b8",
-              margin: 0,
-              lineHeight: "1.5",
-            }}
-          >
+      <div className="bg-[#0f2652]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3">
+          <p className="text-[13px] text-slate-400 m-0 leading-[1.5] text-center sm:text-left">
             © 2026 MediCure. All Rights Reserved.
             <br />
-            <span style={{ color: "#64748b", fontSize: "12px" }}>
+            <span className="text-slate-500 text-[12px]">
               Built for B2C + B2B Pharma E-commerce.
             </span>
           </p>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
+          <div className="flex flex-wrap items-center gap-1">
             {[
               ["Terms & Conditions", "/legal/terms"],
               ["Privacy Policy", "/legal/privacy"],
@@ -556,31 +257,11 @@ const Footer = () => {
             ].map(([label, href], i) => (
               <React.Fragment key={href}>
                 {i > 0 && (
-                  <span
-                    style={{
-                      color: "#334155",
-                      fontSize: "13px",
-                      padding: "0 2px",
-                    }}
-                  >
-                    |
-                  </span>
+                  <span className="text-slate-600 text-[13px] px-0.5">|</span>
                 )}
                 <Link
                   href={href}
-                  style={{
-                    color: "#94a3b8",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    padding: "2px 8px",
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "#ffffff")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "#94a3b8")
-                  }
+                  className="text-slate-400 no-underline text-[13px] px-2 py-0.5 transition-colors hover:text-white"
                 >
                   {label}
                 </Link>

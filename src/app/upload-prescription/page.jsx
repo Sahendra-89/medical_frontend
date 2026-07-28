@@ -103,9 +103,7 @@ export default function UploadPrescriptionPage() {
 
           {/* Right Content - Doctor Image */}
           <div className="md:w-1/2 flex justify-end relative h-80 mt-10 md:mt-0">
-            {/* The Circle Outline */}
             <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-full border-2 border-blue-300/40 mr-4 sm:mr-10 relative">
-              {/* The Nurse Image */}
               <img
                 src="https://cdn.pixabay.com/photo/2021/11/20/03/16/doctor-6810750_1280.png"
                 alt="Pharmacist"

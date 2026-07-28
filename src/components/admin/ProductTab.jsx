@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Package } from 'lucide-react';
-import { getProducts, getCategories } from '../../lib/api';
+import { getProducts, getCategories, createProduct, updateProduct, deleteProduct } from '../../lib/api';
 
 const CAT_COLORS = {
   'must-haves':        'bg-amber-100 text-amber-700',
@@ -46,7 +46,14 @@ export default function ProductTab() {
   const fetchProducts = async () => {
     setProdLoading(true);
     const res = await getProducts({ category: activeCat === 'all' ? undefined : activeCat, search: prodSearch || undefined });
-    if (res.success) setProducts(res.products);
+    if (res.success) {
+      // Calculate missing fields for fallback data if needed
+      const enrichedProducts = res.products.map(p => ({
+        ...p,
+        discount_percent: p.mrp && p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : (p.discount_percent || 0)
+      }));
+      setProducts(enrichedProducts);
+    }
     setProdLoading(false);
   };
 
@@ -55,28 +62,24 @@ export default function ProductTab() {
   // ── Handlers ──
   const handleProdSubmit = async (e) => {
     e.preventDefault();
-    const storage = JSON.parse(localStorage.getItem('pp_mock_storage') || '{}');
-    if (!storage.products) storage.products = [];
     if (editingProd) {
-      storage.products = storage.products.map(p => p.id === editingProd ? { ...p, ...prodForm } : p);
+      await updateProduct(editingProd, prodForm);
     } else {
-      storage.products.push({ id: Date.now(), ...prodForm, sku: 'PP-NEW-' + Date.now(), is_featured: false, is_bestseller: false, rating: 4.0, review_count: 0 });
+      await createProduct({ ...prodForm, sku: 'PP-NEW-' + Date.now(), is_featured: false, is_bestseller: false });
     }
-    localStorage.setItem('pp_mock_storage', JSON.stringify(storage));
     setShowProdForm(false); setEditingProd(null);
     setProdForm({ name: '', brand: '', category_id: 'must-haves', mrp: '', discount_percent: 0, price: '', stock: 0, description: '', prescription_required: false, image: '' });
     fetchProducts();
   };
 
   const handleProdEdit = (p) => {
-    setProdForm(p); setEditingProd(p.id); setShowProdForm(true);
+    setProdForm({ ...p, mrp: p.mrp || '', price: p.price || '', stock: p.stock || 0, discount_percent: p.discount_percent || 0 }); 
+    setEditingProd(p.id); setShowProdForm(true);
   };
 
-  const handleProdDelete = (id) => {
+  const handleProdDelete = async (id) => {
     if (!confirm('Delete this product?')) return;
-    const storage = JSON.parse(localStorage.getItem('pp_mock_storage') || '{}');
-    storage.products = (storage.products || []).filter(p => p.id !== id);
-    localStorage.setItem('pp_mock_storage', JSON.stringify(storage));
+    await deleteProduct(id);
     fetchProducts();
   };
 

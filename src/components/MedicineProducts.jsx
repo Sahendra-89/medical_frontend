@@ -16,111 +16,319 @@ import {
 import { useCart } from "../context/CartContext";
 import { getProducts } from "../lib/api";
 
-// ── Rich static fallback products with usage info ──────────────────────────
+// ── Product catalog from price list (24 products) ────────────────────────────
 const STATIC_PRODUCTS = [
   {
-    id: "med-1",
-    name: "Paracetamol 500mg Tablets",
-    brand: "Cipla Ltd.",
+    id: "A460",
+    name: "3M Micropore Surgical Tape 3\" 1×4",
+    brand: "ROMSONS",
+    category: "Surgical Supplies",
+    usage: "Wound Dressing · Post-Surgery · Skin Fixation",
+    description: "Medical grade micropore surgical tape. Gentle on skin, strong hold. Pack of 1×4.",
+    price: 911, mrp: 1519,
+    image: "/medicines/micropore_tape.jpg",
+    rating: 4.5, review_count: 320, stock: 5,
+    prescription_required: false,
+    highlights: ["40% OFF", "Skin friendly", "Strong hold"],
+  },
+  {
+    id: "A221",
+    name: "A to Z NS 15Tab",
+    brand: "ALKEM",
     category: "Tablets",
-    usage: "Fever · Headache · Body Pain",
-    description: "Fast-acting pain relief & fever reducer. Strip of 10 tablets.",
-    price: 35, mrp: 52,
-    image: "/medicines/paracetamol.jpg",
-    rating: 4.7, review_count: 2340, stock: 150,
+    usage: "Multivitamin · Nutritional Support · Immunity",
+    description: "Comprehensive multivitamin and mineral supplement. Strip of 15 tablets.",
+    price: 145, mrp: 171,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.6, review_count: 1240, stock: 11,
     prescription_required: false,
-    highlights: ["Non-drowsy", "Clinically tested", "Strip of 10"],
+    highlights: ["15% OFF", "Strip of 15", "Multivitamin"],
   },
   {
-    id: "med-2",
-    name: "Honitus Cough Syrup 100ml",
-    brand: "Dabur India",
-    category: "Syrups",
-    usage: "Dry Cough · Throat Relief · Cold",
-    description: "Ayurvedic cough formula with Tulsi, Honey & Mulethi. Non-drowsy relief.",
-    price: 95, mrp: 130,
-    image: "/medicines/cough_syrup.jpg",
-    rating: 4.5, review_count: 1856, stock: 85,
+    id: "A517",
+    name: "AC-03 SG Cap 10Cap",
+    brand: "LEGEND PHARMACEUTICAL",
+    category: "Capsules",
+    usage: "Acidity · Gastric Relief · Heartburn",
+    description: "Softgel capsules for fast relief from acidity and gastric discomfort.",
+    price: 306, mrp: 360,
+    image: "/medicines/capsule_strip.jpg",
+    rating: 4.3, review_count: 580, stock: 10,
     prescription_required: false,
-    highlights: ["Ayurvedic", "Non-drowsy", "100ml bottle"],
+    highlights: ["15% OFF", "10 capsules", "Fast acting"],
   },
   {
-    id: "med-3",
-    name: "Boroline Antiseptic Cream 20g",
-    brand: "G.D. Pharmaceuticals",
-    category: "Topical Cream",
-    usage: "Cuts · Dry Skin · Cracked Heels",
-    description: "Night repair antiseptic cream for cuts, cracks & dry skin.",
-    price: 42, mrp: 55,
-    image: "/medicines/antiseptic_cream.jpg",
-    rating: 4.6, review_count: 3120, stock: 200,
-    prescription_required: false,
-    highlights: ["Antiseptic", "Night repair", "20g tube"],
+    id: "A277",
+    name: "Acinostop 1GM Injection",
+    brand: "GLENMARK",
+    category: "Injection",
+    usage: "Antibiotic · Bacterial Infections · Post-Surgery",
+    description: "Broad spectrum antibiotic injection 1GM. For severe bacterial infections.",
+    price: 393, mrp: 655,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.4, review_count: 210, stock: 3,
+    prescription_required: true,
+    highlights: ["40% OFF", "Rx required", "1GM strength"],
   },
   {
-    id: "med-4",
-    name: "HealthKart Vitamin D3 (2000 IU)",
-    brand: "HealthKart",
-    category: "Supplements",
-    usage: "Bone Health · Immunity · Calcium Absorption",
-    description: "60 capsules. Supports bone health, immunity & calcium absorption.",
-    price: 349, mrp: 499,
-    image: "/medicines/vitamin_d3.jpg",
-    rating: 4.8, review_count: 4580, stock: 120,
-    prescription_required: false,
-    highlights: ["60 capsules", "2000 IU", "Bone health"],
-  },
-  {
-    id: "med-5",
-    name: "Omega-3 Fish Oil 1000mg",
-    brand: "Healthvit",
-    category: "Supplements",
-    usage: "Heart Health · Brain Function · Joint Support",
-    description: "Triple strength EPA & DHA for heart, brain & joint health. 60 softgels.",
-    price: 425, mrp: 699,
-    image: "/medicines/omega3.jpg",
-    rating: 4.4, review_count: 1290, stock: 75,
-    prescription_required: false,
-    highlights: ["Triple strength", "60 softgels", "EPA & DHA"],
-  },
-  {
-    id: "med-6",
-    name: "Dr. Morepen BP Monitor BPOne",
-    brand: "Dr. Morepen",
+    id: "A390",
+    name: "Aero Comfort Pro Adult Neb Kit 1×10",
+    brand: "ROMSONS",
     category: "Medical Device",
-    usage: "Blood Pressure · Heart Rate · Memory Recall",
-    description: "Fully automatic digital BP monitor with WHO indicator & memory recall.",
-    price: 999, mrp: 1799,
-    image: "/medicines/bp_monitor.jpg",
-    rating: 4.3, review_count: 876, stock: 40,
+    usage: "Asthma · Nebulization · Respiratory Care",
+    description: "Adult nebulizer kit with mask and tubing. Pack of 10. For home & hospital use.",
+    price: 310, mrp: 621,
+    image: "/medicines/nebulizer_kit.jpg",
+    rating: 4.7, review_count: 890, stock: 1,
     prescription_required: false,
-    highlights: ["Auto inflate", "WHO indicator", "Memory recall"],
+    highlights: ["50% OFF", "Pack of 10", "Medical grade"],
   },
   {
-    id: "med-7",
-    name: "Dolo 650 Paracetamol",
-    brand: "Micro Labs",
+    id: "A6",
+    name: "Albucell 20% 50ML",
+    brand: "INTAS",
+    category: "IV Infusion",
+    usage: "Hypovolemia · Protein Deficiency · Burns",
+    description: "Human albumin 20% solution 50ML for IV infusion. Hospital use.",
+    price: 1925, mrp: 3500,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.5, review_count: 145, stock: 2,
+    prescription_required: true,
+    highlights: ["45% OFF", "20% strength", "50ML vial"],
+  },
+  {
+    id: "A00009",
+    name: "Alburel 20% 100ML",
+    brand: "RELIANCE",
+    category: "IV Infusion",
+    usage: "Hypovolemia · Liver Disease · Critical Care",
+    description: "Human albumin 20% infusion solution 100ML. For critical care patients.",
+    price: 5907, mrp: 10740,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.6, review_count: 98, stock: 3,
+    prescription_required: true,
+    highlights: ["45% OFF", "100ML", "ICU grade"],
+  },
+  {
+    id: "A541",
+    name: "Alcocon SP 10Tab",
+    brand: "INTELICO PHARMACEUTICALS",
     category: "Tablets",
-    usage: "Fever · Headache · Mild Pain Relief",
-    description: "Trusted fever & headache relief. Strip of 15 tablets.",
-    price: 30, mrp: 35,
-    image: "/medicines/paracetamol.jpg",
-    rating: 4.9, review_count: 8640, stock: 300,
+    usage: "Pain Relief · Anti-inflammatory · Fever",
+    description: "Combination tablet for pain, inflammation and fever. Strip of 10.",
+    price: 76, mrp: 89,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.2, review_count: 430, stock: 50,
     prescription_required: false,
-    highlights: ["Strip of 15", "650mg", "Doctor trusted"],
+    highlights: ["15% OFF", "Strip of 10", "Dual action"],
   },
   {
-    id: "med-8",
-    name: "Benadryl Cough Formula 150ml",
-    brand: "Johnson & Johnson",
-    category: "Syrups",
-    usage: "Wet Cough · Dry Cough · Congestion",
-    description: "Fast relief from dry & wet cough. Non-drowsy formula.",
-    price: 115, mrp: 145,
-    image: "/medicines/cough_syrup.jpg",
-    rating: 4.3, review_count: 1540, stock: 60,
+    id: "A99",
+    name: "Alcofix Gold 10Tab",
+    brand: "ALNICHE",
+    category: "Tablets",
+    usage: "Liver Support · Detox · Hepatic Care",
+    description: "Gold standard liver support tablet. Promotes liver health and detoxification.",
+    price: 263, mrp: 328,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.5, review_count: 275, stock: 3,
     prescription_required: false,
-    highlights: ["150ml", "Non-drowsy", "Dual action"],
+    highlights: ["20% OFF", "Liver support", "Strip of 10"],
+  },
+  {
+    id: "A283",
+    name: "Aldigesic SP 10Tab",
+    brand: "ALKEM",
+    category: "Tablets",
+    usage: "Pain · Inflammation · Post-Op Recovery",
+    description: "Analgesic and anti-inflammatory tablet combination. Strip of 10 tablets.",
+    price: 105, mrp: 124,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.4, review_count: 860, stock: 2,
+    prescription_required: false,
+    highlights: ["15% OFF", "Strip of 10", "Anti-inflammatory"],
+  },
+  {
+    id: "A435",
+    name: "Alfoo Tab 30Tab",
+    brand: "DR.REDDY",
+    category: "Tablets",
+    usage: "Prostate · Urinary Flow · BPH",
+    description: "Alpha blocker tablet for benign prostatic hyperplasia. 30 tablet pack.",
+    price: 729, mrp: 858,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.3, review_count: 512, stock: 5,
+    prescription_required: true,
+    highlights: ["15% OFF", "30 tablets", "Rx required"],
+  },
+  {
+    id: "A314",
+    name: "AM-Amino T 100ML Infusion",
+    brand: "AMNEAL HEALTHCARE PVT LTD",
+    category: "IV Infusion",
+    usage: "Amino Acids · Nutrition · Post-Surgery Recovery",
+    description: "Amino acid infusion solution 100ML for parenteral nutrition support.",
+    price: 440, mrp: 880,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.5, review_count: 167, stock: 6,
+    prescription_required: true,
+    highlights: ["50% OFF", "100ML", "Nutritional IV"],
+  },
+  {
+    id: "A199",
+    name: "AM-Amino T 500ML Infusion",
+    brand: "AMNEAL HEALTHCARE PVT LTD",
+    category: "IV Infusion",
+    usage: "Parenteral Nutrition · ICU · Post-Op Support",
+    description: "Large volume amino acid infusion 500ML for intensive nutritional support.",
+    price: 891, mrp: 1980,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.6, review_count: 134, stock: 5,
+    prescription_required: true,
+    highlights: ["55% OFF", "500ML", "ICU nutrition"],
+  },
+  {
+    id: "A559",
+    name: "Amaryl 2MG 30Tab",
+    brand: "EMCURE",
+    category: "Tablets",
+    usage: "Diabetes · Blood Sugar Control · Type 2 DM",
+    description: "Glimepiride 2MG tablets for Type 2 diabetes management. 30 tablet pack.",
+    price: 158, mrp: 186,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.5, review_count: 1890, stock: 1,
+    prescription_required: true,
+    highlights: ["15% OFF", "2MG strength", "30 tablets"],
+  },
+  {
+    id: "A111",
+    name: "Aminoven Infrant 100ML",
+    brand: "FRESENIUS P.N",
+    category: "IV Infusion",
+    usage: "Neonatal Nutrition · Premature Infants · ICU",
+    description: "Amino acid solution for infants requiring parenteral nutrition. 100ML.",
+    price: 571, mrp: 672,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.7, review_count: 89, stock: 5,
+    prescription_required: true,
+    highlights: ["15% OFF", "Infant use", "100ML"],
+  },
+  {
+    id: "A175",
+    name: "Amnealyte Duo 500ML",
+    brand: "AMNEAL HEALTHCARE PVT LTD",
+    category: "IV Infusion",
+    usage: "Electrolyte Balance · Dehydration · IV Fluids",
+    description: "Dual electrolyte infusion solution 500ML for fluid & electrolyte replacement.",
+    price: 169, mrp: 422,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.4, review_count: 203, stock: 2,
+    prescription_required: true,
+    highlights: ["60% OFF", "500ML", "Electrolytes"],
+  },
+  {
+    id: "A349",
+    name: "Amnepara Duo 100ML",
+    brand: "AMNEAL HEALTHCARE PVT LTD",
+    category: "IV Infusion",
+    usage: "IV Nutrition · Parenteral · Critical Care",
+    description: "Combined parenteral nutrition solution 100ML for critical care patients.",
+    price: 301, mrp: 861,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.5, review_count: 118, stock: 6,
+    prescription_required: true,
+    highlights: ["65% OFF", "100ML", "Critical care"],
+  },
+  {
+    id: "A422",
+    name: "Amnezin Zinc Injection",
+    brand: "AMNEAL HEALTHCARE PVT LTD",
+    category: "Injection",
+    usage: "Zinc Deficiency · Wound Healing · Immunity",
+    description: "Zinc supplement injection for deficiency correction and wound healing support.",
+    price: 316, mrp: 703,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.3, review_count: 156, stock: 85,
+    prescription_required: true,
+    highlights: ["55% OFF", "Zinc supplement", "Rx required"],
+  },
+  {
+    id: "A65",
+    name: "Amphonex 50MG Injection",
+    brand: "BSV",
+    category: "Injection",
+    usage: "Antifungal · Fungal Infections · Immunocompromised",
+    description: "Amphotericin B 50MG injection for serious systemic fungal infections.",
+    price: 4880, mrp: 9760,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.6, review_count: 67, stock: 45,
+    prescription_required: true,
+    highlights: ["50% OFF", "50MG", "Antifungal"],
+  },
+  {
+    id: "A183",
+    name: "Akynzeo IV Injection",
+    brand: "FRESENIUS P.N",
+    category: "Injection",
+    usage: "Chemotherapy Nausea · Anti-emetic · Vomiting",
+    description: "IV antiemetic injection for prevention of chemo-induced nausea and vomiting.",
+    price: 4781, mrp: 5625,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.7, review_count: 43, stock: 3,
+    prescription_required: true,
+    highlights: ["15% OFF", "IV grade", "Rx required"],
+  },
+  {
+    id: "A313",
+    name: "Acaone 100MG 30Tab",
+    brand: "MSN LABORATORIES PVT.LTD",
+    category: "Tablets",
+    usage: "Osteoporosis · Bone Density · Calcium Metabolism",
+    description: "Alendronate 100MG tablet for osteoporosis treatment. 30 tablet pack.",
+    price: 10580, mrp: 17634,
+    image: "/medicines/tablet_strip.jpg",
+    rating: 4.4, review_count: 234, stock: 6,
+    prescription_required: true,
+    highlights: ["40% OFF", "30 tablets", "Bone health"],
+  },
+  {
+    id: "A247",
+    name: "Alburel OS 100ML",
+    brand: "RELIANCE",
+    category: "IV Infusion",
+    usage: "Oncology Support · Fluid Management · Surgery",
+    description: "Human albumin oral solution 100ML for nutritional and fluid management.",
+    price: 4875, mrp: 8864,
+    image: "/medicines/iv_infusion.jpg",
+    rating: 4.5, review_count: 91, stock: 6,
+    prescription_required: true,
+    highlights: ["45% OFF", "100ML", "Oncology use"],
+  },
+  {
+    id: "A352",
+    name: "Adalipca 30MG Injection",
+    brand: "LPCA",
+    category: "Injection",
+    usage: "Lipid Metabolism · Specialized Treatment",
+    description: "Specialized injection 30MG for lipid metabolism disorders. Hospital use only.",
+    price: 10000, mrp: 25000,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.3, review_count: 28, stock: 3,
+    prescription_required: true,
+    highlights: ["60% OFF", "Hospital use", "30MG"],
+  },
+  {
+    id: "A28",
+    name: "Adalirel 40MG Injection",
+    brand: "RELIANCE",
+    category: "Injection",
+    usage: "Rheumatoid Arthritis · Crohn's Disease · Psoriasis",
+    description: "Adalimumab biosimilar 40MG injection for autoimmune conditions.",
+    price: 8735, mrp: 24956,
+    image: "/medicines/injection_vial.jpg",
+    rating: 4.6, review_count: 52, stock: 5,
+    prescription_required: true,
+    highlights: ["65% OFF", "Biosimilar", "Rx required"],
   },
 ];
 
@@ -131,7 +339,9 @@ const MedicineCard = ({ product }) => {
   const [added, setAdded] = useState(false);
 
   const savings =
-    product.mrp && product.price ? +(product.mrp - product.price).toFixed(2) : 0;
+    product.mrp && product.price
+      ? +(product.mrp - product.price).toFixed(2)
+      : 0;
   const discountPct =
     product.mrp && product.mrp > product.price
       ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
@@ -149,14 +359,24 @@ const MedicineCard = ({ product }) => {
       <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-br from-blue-400/0 to-cyan-400/0 group-hover:from-blue-400/15 group-hover:to-emerald-400/15 transition-all duration-500 -z-10 blur-xl" />
 
       {/* ── Image Section ── */}
-      <div className="relative bg-white border-b border-slate-100 overflow-hidden" style={{ paddingTop: "85%" }}>
-        <Link href={`/shop/${product.id}`} className="absolute inset-0 p-4 flex items-center justify-center bg-slate-50">
+      <div
+        className="relative bg-white border-b border-slate-100 overflow-hidden"
+        style={{ paddingTop: "85%" }}
+      >
+        <Link
+          href={`/shop/${product.id}`}
+          className="absolute inset-0 p-4 flex items-center justify-center bg-slate-50"
+        >
           <img
-            src={product.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400"}
+            src={
+              product.image ||
+              "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400"
+            }
             alt={product.name}
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
             onError={(e) => {
-              e.target.src = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400";
+              e.target.src =
+                "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400";
             }}
           />
         </Link>
@@ -180,7 +400,12 @@ const MedicineCard = ({ product }) => {
               : "bg-white/90 backdrop-blur-sm hover:bg-red-50 hover:border hover:border-red-200 hover:scale-110"
           }`}
         >
-          <Heart size={14} className={isWishlisted ? "fill-red-500 text-red-500" : "text-slate-400"} />
+          <Heart
+            size={14}
+            className={
+              isWishlisted ? "fill-red-500 text-red-500" : "text-slate-400"
+            }
+          />
         </button>
 
         {/* Category Pill */}
@@ -231,7 +456,10 @@ const MedicineCard = ({ product }) => {
         {product.highlights && product.highlights.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {product.highlights.slice(0, 3).map((h, i) => (
-              <span key={i} className="flex items-center gap-0.5 text-[9px] text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-semibold">
+              <span
+                key={i}
+                className="flex items-center gap-0.5 text-[9px] text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-semibold"
+              >
                 <CheckCircle size={8} className="text-slate-500" /> {h}
               </span>
             ))}
@@ -247,7 +475,11 @@ const MedicineCard = ({ product }) => {
               </div>
               {product.review_count > 0 && (
                 <span className="text-[9px] text-black font-medium">
-                  ({product.review_count > 999 ? `${(product.review_count / 1000).toFixed(1)}k` : product.review_count})
+                  (
+                  {product.review_count > 999
+                    ? `${(product.review_count / 1000).toFixed(1)}k`
+                    : product.review_count}
+                  )
                 </span>
               )}
             </div>
@@ -255,7 +487,8 @@ const MedicineCard = ({ product }) => {
           <div className="text-[9px] font-semibold ml-auto">
             {product.stock > 10 ? (
               <span className="text-emerald-600 flex items-center gap-0.5">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> In Stock
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />{" "}
+                In Stock
               </span>
             ) : product.stock > 0 ? (
               <span className="text-amber-600">Only {product.stock} left</span>
@@ -269,9 +502,13 @@ const MedicineCard = ({ product }) => {
         <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="font-black text-lg text-black">₹{product.price}</span>
+              <span className="font-black text-lg text-black">
+                ₹{product.price}
+              </span>
               {product.mrp && product.mrp > product.price && (
-                <span className="text-xs text-slate-500 line-through">₹{product.mrp}</span>
+                <span className="text-xs text-slate-500 line-through">
+                  ₹{product.mrp}
+                </span>
               )}
             </div>
             {savings > 0 && (
@@ -288,14 +525,18 @@ const MedicineCard = ({ product }) => {
               product.stock <= 0
                 ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                 : added
-                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white scale-95 shadow-emerald-200/60 shadow-lg"
-                : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white hover:shadow-lg hover:shadow-blue-200/50 active:scale-95"
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white scale-95 shadow-emerald-200/60 shadow-lg"
+                  : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white hover:shadow-lg hover:shadow-blue-200/50 active:scale-95"
             }`}
           >
             {added ? (
-              <><CheckCircle size={13} /> Added!</>
+              <>
+                <CheckCircle size={13} /> Added!
+              </>
             ) : (
-              <><ShoppingCart size={13} /> Add</>
+              <>
+                <ShoppingCart size={13} /> Add
+              </>
             )}
           </button>
         </div>
@@ -329,19 +570,23 @@ const MedicineProducts = () => {
       } catch {
         setProducts(STATIC_PRODUCTS);
       } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  const categories = ["All", "Tablets", "Syrups", "Supplements", "Topical Cream", "Medical Device"];
+const categories = [
+    "All",
+    "Tablets",
+    "Capsules",
+    "Injection",
+    "IV Infusion",
+    "Medical Device",
+    "Surgical Supplies",
+  ];
 
   const filtered =
     activeCategory === "All"
       ? products
-      : products.filter(
-          (p) =>
-            (p.category || "").toLowerCase().includes(activeCategory.toLowerCase())
+      : products.filter((p) =>
+          (p.category || "")
+            .toLowerCase()
+            .includes(activeCategory.toLowerCase()),
         );
 
   return (
@@ -351,19 +596,21 @@ const MedicineProducts = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-100/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-md" />
-              <span className="text-[11px] font-black text-blue-500 uppercase tracking-widest">Featured Products</span>
+              <span className="text-[11px] font-black text-blue-500 uppercase tracking-widest">
+                Featured Products
+              </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
               Shop Top Medicines &amp; Healthcare
             </h2>
             <p className="text-sm text-slate-700 mt-1.5 max-w-lg">
-              Trusted brands at the best prices — with usage, highlights &amp; savings.
+              Trusted brands at the best prices — with usage, highlights &amp;
+              savings.
             </p>
           </div>
           <Link
@@ -371,7 +618,10 @@ const MedicineProducts = () => {
             className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-4 py-2 rounded-full transition-all duration-200 group flex-shrink-0"
           >
             View All Medicines
-            <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight
+              size={14}
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
           </Link>
         </div>
 
@@ -396,7 +646,10 @@ const MedicineProducts = () => {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-96 bg-slate-100 animate-pulse rounded-3xl" />
+              <div
+                key={i}
+                className="h-96 bg-slate-100 animate-pulse rounded-3xl"
+              />
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -406,7 +659,7 @@ const MedicineProducts = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {filtered.slice(0, 8).map((product) => (
+            {filtered.slice(0, 12).map((product) => (
               <MedicineCard key={product.id} product={product} />
             ))}
           </div>
@@ -417,9 +670,15 @@ const MedicineProducts = () => {
           <div className="mt-12 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-3xl p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl shadow-blue-200/40 relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCI+PHBhdGggZD0iTTM2IDM0djZoLTZ2LTZoLTZ2LTZoNnYtNmg2djZoNnY2aC02eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30 pointer-events-none" />
             <div className="relative z-10 text-white text-center sm:text-left">
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-1">🎁 Limited Time</p>
-              <h3 className="text-xl sm:text-2xl font-black">Explore 500+ Healthcare Products</h3>
-              <p className="text-blue-200 text-sm mt-1">Genuine medicines · Upto 60% off · Free delivery above ₹499</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-1">
+                🎁 Limited Time
+              </p>
+              <h3 className="text-xl sm:text-2xl font-black">
+                Explore 500+ Healthcare Products
+              </h3>
+              <p className="text-blue-200 text-sm mt-1">
+                Genuine medicines · Upto 60% off · Free delivery above ₹499
+              </p>
             </div>
             <Link
               href="/shop"

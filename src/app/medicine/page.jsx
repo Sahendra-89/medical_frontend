@@ -1,15 +1,23 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { getMedicines } from '../../lib/api';
+import { getProducts } from '../../lib/api';
 import Link from 'next/link';
 import { Search, Filter, X, Pill, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import Breadcrumbs from '../../components/Breadcrumbs';
 
-const CATEGORIES = ['Tablets', 'Capsules', 'Injections', 'Syrups', 'Nutrition Products', 'Surgical Products', 'Devices', 'OTC'];
+const CATEGORIES = [
+  'must-haves', 'vitamin-store', 'sexual-wellness', 'personal-care', 
+  'homeopathy', 'summer-store', 'health-food', 'diabetes-essentials',
+  'ayurvedic', 'mother-baby', 'elderly-care', 'otc', 'prescription',
+  'devices', 'wellness'
+];
 
 const CAT_ICONS = {
-  Tablets: '💊', Capsules: '🔵', Injections: '💉', Syrups: '🧪',
-  'Nutrition Products': '🥗', 'Surgical Products': '🩹', Devices: '🩺', OTC: '🏥'
+  'must-haves': '⭐', 'vitamin-store': '💊', 'sexual-wellness': '❤️', 
+  'personal-care': '🧴', 'homeopathy': '🔬', 'summer-store': '☀️', 
+  'health-food': '🥤', 'diabetes-essentials': '🩸', 'ayurvedic': '🌱', 
+  'mother-baby': '👶', 'elderly-care': '🦯', 'otc': '🏥', 
+  'prescription': '📋', 'devices': '🩺', 'wellness': '🌿'
 };
 
 export default function MedicineCatalogPage() {
@@ -23,8 +31,18 @@ export default function MedicineCatalogPage() {
 
   const load = async () => {
     setLoading(true);
-    const res = await getMedicines({ search: query, category, limit: 500 });
-    setMedicines(res.data || []);
+    const res = await getProducts({ search: query, category, limit: 500 });
+    // Map products to the medicine format expected by the UI
+    const mapped = (res.products || []).map(p => ({
+      id: p.id,
+      medicine_name: p.name,
+      company_name: p.brand,
+      category: p.category_id,
+      price: p.price,
+      image_url: p.image,
+      slug: p.id // Use ID as slug if there is no slug
+    }));
+    setMedicines(mapped);
     setLoading(false);
   };
 

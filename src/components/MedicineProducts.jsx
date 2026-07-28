@@ -149,12 +149,12 @@ const MedicineCard = ({ product }) => {
       <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-br from-blue-400/0 to-cyan-400/0 group-hover:from-blue-400/15 group-hover:to-emerald-400/15 transition-all duration-500 -z-10 blur-xl" />
 
       {/* ── Image Section ── */}
-      <div className="relative bg-gradient-to-br from-slate-50 via-blue-50/40 to-cyan-50/20 overflow-hidden" style={{ paddingTop: "75%" }}>
-        <Link href={`/shop/${product.id}`} className="absolute inset-0 p-5 flex items-center justify-center">
+      <div className="relative bg-white border-b border-slate-100 overflow-hidden" style={{ paddingTop: "85%" }}>
+        <Link href={`/shop/${product.id}`} className="absolute inset-0 p-4 flex items-center justify-center bg-slate-50">
           <img
             src={product.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400"}
             alt={product.name}
-            className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
             onError={(e) => {
               e.target.src = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400";
             }}
@@ -162,7 +162,7 @@ const MedicineCard = ({ product }) => {
         </Link>
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         {/* Discount Badge */}
         {discountPct > 0 && (
@@ -201,38 +201,38 @@ const MedicineCard = ({ product }) => {
       {/* ── Content Section ── */}
       <div className="p-4 flex-1 flex flex-col gap-2">
         {/* Brand */}
-        <span className="inline-block text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider w-fit">
+        <span className="inline-block text-[9px] font-black text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full uppercase tracking-wider w-fit">
           {product.brand || "Generic"}
         </span>
 
         {/* Product Name */}
         <Link href={`/shop/${product.id}`}>
-          <h3 className="font-bold text-sm text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+          <h3 className="font-bold text-sm text-black group-hover:text-slate-700 transition-colors line-clamp-2 leading-snug">
             {product.name}
           </h3>
         </Link>
 
-        {/* ── USAGE SECTION (new) ── */}
+        {/* ── USAGE SECTION ── */}
         {(product.usage || product.usage_instructions) && (
-          <div className="flex items-start gap-1.5 bg-blue-50/70 rounded-xl px-2.5 py-2 border border-blue-100/60">
-            <Info size={10} className="text-blue-500 flex-shrink-0 mt-0.5" />
-            <p className="text-[10px] text-blue-700 font-semibold leading-snug line-clamp-2">
+          <div className="flex items-start gap-1.5 bg-slate-100 rounded-xl px-2.5 py-2 border border-slate-200">
+            <Info size={10} className="text-slate-500 flex-shrink-0 mt-0.5" />
+            <p className="text-[10px] text-black font-semibold leading-snug line-clamp-2">
               {product.usage || product.usage_instructions}
             </p>
           </div>
         )}
 
         {/* Description */}
-        <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
           {product.description || "Premium quality healthcare product."}
         </p>
 
-        {/* ── Highlights (new) ── */}
+        {/* ── Highlights ── */}
         {product.highlights && product.highlights.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {product.highlights.slice(0, 3).map((h, i) => (
-              <span key={i} className="flex items-center gap-0.5 text-[9px] text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full font-semibold">
-                <CheckCircle size={8} className="text-emerald-500" /> {h}
+              <span key={i} className="flex items-center gap-0.5 text-[9px] text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-semibold">
+                <CheckCircle size={8} className="text-slate-500" /> {h}
               </span>
             ))}
           </div>
@@ -246,7 +246,7 @@ const MedicineCard = ({ product }) => {
                 <Star size={8} fill="white" /> {product.rating}
               </div>
               {product.review_count > 0 && (
-                <span className="text-[9px] text-slate-400 font-medium">
+                <span className="text-[9px] text-black font-medium">
                   ({product.review_count > 999 ? `${(product.review_count / 1000).toFixed(1)}k` : product.review_count})
                 </span>
               )}
@@ -258,9 +258,9 @@ const MedicineCard = ({ product }) => {
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> In Stock
               </span>
             ) : product.stock > 0 ? (
-              <span className="text-amber-500">Only {product.stock} left</span>
+              <span className="text-amber-600">Only {product.stock} left</span>
             ) : (
-              <span className="text-red-400">Out of Stock</span>
+              <span className="text-red-500">Out of Stock</span>
             )}
           </div>
         </div>
@@ -269,13 +269,13 @@ const MedicineCard = ({ product }) => {
         <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="font-black text-lg text-slate-900">₹{product.price}</span>
+              <span className="font-black text-lg text-black">₹{product.price}</span>
               {product.mrp && product.mrp > product.price && (
-                <span className="text-xs text-slate-400 line-through">₹{product.mrp}</span>
+                <span className="text-xs text-slate-500 line-through">₹{product.mrp}</span>
               )}
             </div>
             {savings > 0 && (
-              <div className="text-[9px] text-emerald-600 font-bold mt-0.5">
+              <div className="text-[9px] text-emerald-700 font-bold mt-0.5">
                 You save ₹{savings}
               </div>
             )}
@@ -302,7 +302,7 @@ const MedicineCard = ({ product }) => {
       </div>
 
       {/* Footer trust bar */}
-      <div className="px-4 pb-3 flex items-center gap-1.5 text-[9px] text-slate-400 font-medium border-t border-slate-50 pt-2">
+      <div className="px-4 pb-3 flex items-center gap-1.5 text-[9px] text-slate-600 font-medium border-t border-slate-100 pt-2">
         <Shield size={9} className="text-emerald-500" />
         100% Genuine · Fast Delivery
       </div>
@@ -359,11 +359,11 @@ const MedicineProducts = () => {
               <div className="w-6 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-md" />
               <span className="text-[11px] font-black text-blue-500 uppercase tracking-widest">Featured Products</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
               Shop Top Medicines &amp; Healthcare
             </h2>
-            <p className="text-sm text-slate-500 mt-1.5 max-w-lg">
-              Trusted brands at the best prices — with name, price, usage &amp; highlights.
+            <p className="text-sm text-slate-700 mt-1.5 max-w-lg">
+              Trusted brands at the best prices — with usage, highlights &amp; savings.
             </p>
           </div>
           <Link

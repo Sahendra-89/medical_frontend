@@ -81,9 +81,16 @@ export const getProducts = async (params = {}) => {
     }));
 
     const combined = [...pData, ...mappedMedicines];
+    
+    // If database is empty, throw an error to trigger the static fallback
+    if (!combined || combined.length === 0) {
+      throw new Error("Database is empty, falling back to static data");
+    }
+
     return ok({ count: combined.length, products: combined });
   } catch (err) {
-    console.warn('[getProducts] Backend error (likely RLS) — using static fallback data.', err?.message);
+    console.warn('[getProducts] Backend empty or error — using static fallback data.', err?.message);
+    
     let fallbackData = [...STATIC_MEDICINES].map(m => ({
       id: `m-${m.id}`,
       name: m.medicine_name,

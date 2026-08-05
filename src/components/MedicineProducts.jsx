@@ -340,7 +340,7 @@ const MedicineProducts = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {filtered.slice(0, 12).map((product) => (
+            {filtered.slice(0, 8).map((product) => (
               <MedicineCard key={product.id} product={product} />
             ))}
           </div>

@@ -52,7 +52,9 @@ export default function HomePage() {
     (async () => {
       try {
         const res = await getProducts({});
-        setAllProducts(res.products || []);
+        const all = res.products || [];
+        // Skip first 8 items (shown in featured section) and reverse to show newly added items first
+        setAllProducts(all.length > 8 ? all.slice(8).reverse() : [...all].reverse());
       } catch (err) {
         console.error(err);
         setAllProducts([]);

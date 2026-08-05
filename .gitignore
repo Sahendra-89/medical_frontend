@@ -34,4 +34,7 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Exclude all env examples and backups
+.env.example
+.git_backup/
 .vercel

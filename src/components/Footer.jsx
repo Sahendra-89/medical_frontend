@@ -54,7 +54,6 @@ const Footer = () => {
       {/* ══ Main Grid ══ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 border-b border-slate-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-
           {/* ── Brand Column ── */}
           <div className="sm:col-span-2 lg:col-span-1">
             {/* Logo */}
@@ -72,8 +71,8 @@ const Footer = () => {
             {/* Description */}
             <p className="text-[13.5px] text-slate-500 leading-[1.8] mb-4 max-w-xs">
               MediCure is a leading B2C &amp; B2B pharmaceutical e-commerce
-              platform offering genuine medicines, devices, and wellness products
-              across Wellness City.
+              platform offering genuine medicines, devices, and wellness
+              products across Wellness City.
             </p>
 
             {/* License Box */}
@@ -103,10 +102,30 @@ const Footer = () => {
             {/* Social Icons */}
             <div className="flex gap-2.5 items-center">
               {[
-                { icon: <Facebook size={17} />, href: "#", label: "Facebook", hoverBg: "#1877f2" },
-                { icon: <Instagram size={17} />, href: "#", label: "Instagram", hoverBg: "#e1306c" },
-                { icon: <Twitter size={17} />, href: "#", label: "Twitter", hoverBg: "#1da1f2" },
-                { icon: <Youtube size={17} />, href: "#", label: "YouTube", hoverBg: "#ff0000" },
+                {
+                  icon: <Facebook size={17} />,
+                  href: "#",
+                  label: "Facebook",
+                  hoverBg: "#1877f2",
+                },
+                {
+                  icon: <Instagram size={17} />,
+                  href: "#",
+                  label: "Instagram",
+                  hoverBg: "#e1306c",
+                },
+                {
+                  icon: <Twitter size={17} />,
+                  href: "#",
+                  label: "Twitter",
+                  hoverBg: "#1da1f2",
+                },
+                {
+                  icon: <Youtube size={17} />,
+                  href: "#",
+                  label: "YouTube",
+                  hoverBg: "#ff0000",
+                },
               ].map((s) => (
                 <a
                   key={s.label}
@@ -135,12 +154,36 @@ const Footer = () => {
             <SectionHeading>Categories</SectionHeading>
             <ul className="flex flex-col gap-3 list-none p-0 m-0">
               {[
-                { label: "OTC Medicines", href: "/shop?category=otc", icon: <Pill size={14} /> },
-                { label: "Prescription Rx", href: "/shop?category=prescription", icon: <FileText size={14} /> },
-                { label: "Medical Devices", href: "/shop?category=devices", icon: <Monitor size={14} /> },
-                { label: "Wellness & Nutrition", href: "/shop?category=wellness", icon: <Salad size={14} /> },
-                { label: "Personal Care", href: "/shop?category=personal-care", icon: <ShoppingBag size={14} /> },
-                { label: "Baby Care", href: "/shop?category=baby-care", icon: <Baby size={14} /> },
+                {
+                  label: "OTC Medicines",
+                  href: "/shop?category=otc",
+                  icon: <Pill size={14} />,
+                },
+                {
+                  label: "Prescription Rx",
+                  href: "/shop?category=prescription",
+                  icon: <FileText size={14} />,
+                },
+                {
+                  label: "Medical Devices",
+                  href: "/shop?category=devices",
+                  icon: <Monitor size={14} />,
+                },
+                {
+                  label: "Wellness & Nutrition",
+                  href: "/shop?category=wellness",
+                  icon: <Salad size={14} />,
+                },
+                {
+                  label: "Personal Care",
+                  href: "/shop?category=personal-care",
+                  icon: <ShoppingBag size={14} />,
+                },
+                {
+                  label: "Baby Care",
+                  href: "/shop?category=baby-care",
+                  icon: <Baby size={14} />,
+                },
               ].map(({ label, href, icon }) => (
                 <li key={href}>
                   <Link
@@ -173,7 +216,11 @@ const Footer = () => {
                     href={href}
                     className="flex items-center gap-1.5 text-slate-500 no-underline text-[13.5px] transition-all duration-200 hover:text-blue-600 hover:pl-1"
                   >
-                    <ChevronRight size={13} color="#2563eb" className="flex-shrink-0" />
+                    <ChevronRight
+                      size={13}
+                      color="#2563eb"
+                      className="flex-shrink-0"
+                    />
                     {label}
                   </Link>
                 </li>
@@ -189,7 +236,7 @@ const Footer = () => {
               <li className="flex items-start gap-2.5">
                 <ContactBadge icon={<MapPin size={14} color="#2563eb" />} />
                 <span className="text-[13px] text-slate-500 leading-[1.65]">
-                  Shop No. 4, Mohmadpur Jharsa Road, Sector 39, Near Police Chowki
+                  Shop No. 4, VPO jharsa, Sector 39, Near Police Chowki
                   <br />
                   Gurugram, Haryana – 122003 India
                 </span>
@@ -209,7 +256,7 @@ const Footer = () => {
                     href="tel:+918376868282"
                     className="text-slate-500 no-underline text-[13px] block leading-[1.65] transition-colors hover:text-blue-600"
                   >
-                    +91 8376868282
+                    8376868282
                   </a>
                 </div>
               </li>
@@ -234,7 +281,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
         </div>
       </div>
 

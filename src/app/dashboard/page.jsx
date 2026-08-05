@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { User, Package, FileText, CheckCircle, Clock, AlertCircle, RefreshCw, ArrowRight } from 'lucide-react';
+import { User, Package, FileText, CheckCircle, Clock, AlertCircle, RefreshCw, ArrowRight, Truck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getUserOrders } from '../../lib/api';
 import { supabase } from '../../lib/supabase';

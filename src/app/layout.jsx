@@ -4,27 +4,31 @@ import { CartProvider } from '../context/CartContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-
 export const metadata = {
-  title: 'MediCure | Buy Medicines Online',
-  description: 'MediCure — India\'s trusted online pharmacy. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products.',
-  keywords: 'buy medicines online, online pharmacy, MediCure, genuine medicines, prescription medicines online, medical devices',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+  title: {
+    default: 'Paridhi Pharma | Buy Medicines Online — Trusted Pharmacy India',
+    template: '%s | Paridhi Pharma',
+  },
+  description:
+    'Paridhi Pharma — India\'s trusted online pharmacy serving Gurgaon, Delhi & Faridabad. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products with fast same-day delivery.',
+  keywords:
+    'buy medicines online, online pharmacy India, Paridhi Pharma, genuine medicines, prescription medicines online, medical devices, pharmacy Gurgaon, pharmacy Delhi NCR',
   openGraph: {
-    title: 'MediCure | Buy Medicines Online',
-    description: 'Trusted online pharmacy with genuine medicines and healthcare devices.',
-    url: 'https://medicure.com',
-    siteName: 'MediCure',
+    title: 'Paridhi Pharma | Buy Medicines Online',
+    description:
+      'Trusted online pharmacy with genuine medicines, fast delivery & licensed pharmacists.',
+    url: 'https://paridhipharma.com',
+    siteName: 'Paridhi Pharma',
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MediCure | Buy Medicines Online',
-    description: 'Genuine medicines and healthcare devices.',
+    title: 'Paridhi Pharma | Buy Medicines Online',
+    description: 'Genuine medicines & healthcare devices — fast delivery in Delhi NCR.',
   },
   alternates: {
-    canonical: 'https://medicure.com',
+    canonical: 'https://paridhipharma.com',
   },
   robots: {
     index: true,
@@ -32,6 +36,9 @@ export const metadata = {
     googleBot: {
       index: true,
       follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
 };
@@ -56,9 +63,71 @@ function WhatsAppFloat() {
 }
 
 export default function RootLayout({ children }) {
+  const pharmacySchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Pharmacy',
+    name: 'Paridhi Pharma',
+    description:
+      'Trusted online pharmacy serving Gurgaon, Delhi NCR & Faridabad with genuine medicines, fast delivery, and licensed pharmacist support.',
+    url: 'https://paridhipharma.com',
+    telephone: '+91-8285508282',
+    email: 'info@paridhipharma.com',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Gurgaon',
+      addressRegion: 'Haryana',
+      addressCountry: 'IN',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 28.4595,
+      longitude: 77.0266,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        opens: '09:00',
+        closes: '21:00',
+      },
+    ],
+    sameAs: [
+      'https://wa.me/8285508282',
+    ],
+    hasMap: 'https://maps.google.com/?q=Paridhi+Pharma+Gurgaon',
+    priceRange: '₹₹',
+    servesCuisine: undefined,
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'Cash, UPI, Credit Card, Debit Card, Net Banking',
+  };
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Paridhi Pharma',
+    url: 'https://paridhipharma.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://paridhipharma.com/shop?search={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
+        {/* JSON-LD Structured Data for Google Rich Results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacySchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <AuthProvider>
           <CartProvider>
             <Navbar />

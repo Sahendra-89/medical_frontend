@@ -16,321 +16,6 @@ import {
 import { useCart } from "../context/CartContext";
 import { getProducts } from "../lib/api";
 
-// ── Product catalog from price list (24 products) ────────────────────────────
-const STATIC_PRODUCTS = [
-  {
-    id: "A460",
-    name: "3M Micropore Surgical Tape 3\" 1×4",
-    brand: "ROMSONS",
-    category: "Surgical Supplies",
-    usage: "Wound Dressing · Post-Surgery · Skin Fixation",
-    description: "Medical grade micropore surgical tape. Gentle on skin, strong hold. Pack of 1×4.",
-    price: 911, mrp: 1519,
-    image: "/medicines/micropore_tape.jpg",
-    rating: 4.5, review_count: 320, stock: 5,
-    prescription_required: false,
-    highlights: ["40% OFF", "Skin friendly", "Strong hold"],
-  },
-  {
-    id: "A221",
-    name: "A to Z NS 15Tab",
-    brand: "ALKEM",
-    category: "Tablets",
-    usage: "Multivitamin · Nutritional Support · Immunity",
-    description: "Comprehensive multivitamin and mineral supplement. Strip of 15 tablets.",
-    price: 145, mrp: 171,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.6, review_count: 1240, stock: 11,
-    prescription_required: false,
-    highlights: ["15% OFF", "Strip of 15", "Multivitamin"],
-  },
-  {
-    id: "A517",
-    name: "AC-03 SG Cap 10Cap",
-    brand: "LEGEND PHARMACEUTICAL",
-    category: "Capsules",
-    usage: "Acidity · Gastric Relief · Heartburn",
-    description: "Softgel capsules for fast relief from acidity and gastric discomfort.",
-    price: 306, mrp: 360,
-    image: "/medicines/capsule_strip.jpg",
-    rating: 4.3, review_count: 580, stock: 10,
-    prescription_required: false,
-    highlights: ["15% OFF", "10 capsules", "Fast acting"],
-  },
-  {
-    id: "A277",
-    name: "Acinostop 1GM Injection",
-    brand: "GLENMARK",
-    category: "Injection",
-    usage: "Antibiotic · Bacterial Infections · Post-Surgery",
-    description: "Broad spectrum antibiotic injection 1GM. For severe bacterial infections.",
-    price: 393, mrp: 655,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.4, review_count: 210, stock: 3,
-    prescription_required: true,
-    highlights: ["40% OFF", "Rx required", "1GM strength"],
-  },
-  {
-    id: "A390",
-    name: "Aero Comfort Pro Adult Neb Kit 1×10",
-    brand: "ROMSONS",
-    category: "Medical Device",
-    usage: "Asthma · Nebulization · Respiratory Care",
-    description: "Adult nebulizer kit with mask and tubing. Pack of 10. For home & hospital use.",
-    price: 310, mrp: 621,
-    image: "/medicines/nebulizer_kit.jpg",
-    rating: 4.7, review_count: 890, stock: 1,
-    prescription_required: false,
-    highlights: ["50% OFF", "Pack of 10", "Medical grade"],
-  },
-  {
-    id: "A6",
-    name: "Albucell 20% 50ML",
-    brand: "INTAS",
-    category: "IV Infusion",
-    usage: "Hypovolemia · Protein Deficiency · Burns",
-    description: "Human albumin 20% solution 50ML for IV infusion. Hospital use.",
-    price: 1925, mrp: 3500,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.5, review_count: 145, stock: 2,
-    prescription_required: true,
-    highlights: ["45% OFF", "20% strength", "50ML vial"],
-  },
-  {
-    id: "A00009",
-    name: "Alburel 20% 100ML",
-    brand: "RELIANCE",
-    category: "IV Infusion",
-    usage: "Hypovolemia · Liver Disease · Critical Care",
-    description: "Human albumin 20% infusion solution 100ML. For critical care patients.",
-    price: 5907, mrp: 10740,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.6, review_count: 98, stock: 3,
-    prescription_required: true,
-    highlights: ["45% OFF", "100ML", "ICU grade"],
-  },
-  {
-    id: "A541",
-    name: "Alcocon SP 10Tab",
-    brand: "INTELICO PHARMACEUTICALS",
-    category: "Tablets",
-    usage: "Pain Relief · Anti-inflammatory · Fever",
-    description: "Combination tablet for pain, inflammation and fever. Strip of 10.",
-    price: 76, mrp: 89,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.2, review_count: 430, stock: 50,
-    prescription_required: false,
-    highlights: ["15% OFF", "Strip of 10", "Dual action"],
-  },
-  {
-    id: "A99",
-    name: "Alcofix Gold 10Tab",
-    brand: "ALNICHE",
-    category: "Tablets",
-    usage: "Liver Support · Detox · Hepatic Care",
-    description: "Gold standard liver support tablet. Promotes liver health and detoxification.",
-    price: 263, mrp: 328,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.5, review_count: 275, stock: 3,
-    prescription_required: false,
-    highlights: ["20% OFF", "Liver support", "Strip of 10"],
-  },
-  {
-    id: "A283",
-    name: "Aldigesic SP 10Tab",
-    brand: "ALKEM",
-    category: "Tablets",
-    usage: "Pain · Inflammation · Post-Op Recovery",
-    description: "Analgesic and anti-inflammatory tablet combination. Strip of 10 tablets.",
-    price: 105, mrp: 124,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.4, review_count: 860, stock: 2,
-    prescription_required: false,
-    highlights: ["15% OFF", "Strip of 10", "Anti-inflammatory"],
-  },
-  {
-    id: "A435",
-    name: "Alfoo Tab 30Tab",
-    brand: "DR.REDDY",
-    category: "Tablets",
-    usage: "Prostate · Urinary Flow · BPH",
-    description: "Alpha blocker tablet for benign prostatic hyperplasia. 30 tablet pack.",
-    price: 729, mrp: 858,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.3, review_count: 512, stock: 5,
-    prescription_required: true,
-    highlights: ["15% OFF", "30 tablets", "Rx required"],
-  },
-  {
-    id: "A314",
-    name: "AM-Amino T 100ML Infusion",
-    brand: "AMNEAL HEALTHCARE PVT LTD",
-    category: "IV Infusion",
-    usage: "Amino Acids · Nutrition · Post-Surgery Recovery",
-    description: "Amino acid infusion solution 100ML for parenteral nutrition support.",
-    price: 440, mrp: 880,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.5, review_count: 167, stock: 6,
-    prescription_required: true,
-    highlights: ["50% OFF", "100ML", "Nutritional IV"],
-  },
-  {
-    id: "A199",
-    name: "AM-Amino T 500ML Infusion",
-    brand: "AMNEAL HEALTHCARE PVT LTD",
-    category: "IV Infusion",
-    usage: "Parenteral Nutrition · ICU · Post-Op Support",
-    description: "Large volume amino acid infusion 500ML for intensive nutritional support.",
-    price: 891, mrp: 1980,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.6, review_count: 134, stock: 5,
-    prescription_required: true,
-    highlights: ["55% OFF", "500ML", "ICU nutrition"],
-  },
-  {
-    id: "A559",
-    name: "Amaryl 2MG 30Tab",
-    brand: "EMCURE",
-    category: "Tablets",
-    usage: "Diabetes · Blood Sugar Control · Type 2 DM",
-    description: "Glimepiride 2MG tablets for Type 2 diabetes management. 30 tablet pack.",
-    price: 158, mrp: 186,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.5, review_count: 1890, stock: 1,
-    prescription_required: true,
-    highlights: ["15% OFF", "2MG strength", "30 tablets"],
-  },
-  {
-    id: "A111",
-    name: "Aminoven Infrant 100ML",
-    brand: "FRESENIUS P.N",
-    category: "IV Infusion",
-    usage: "Neonatal Nutrition · Premature Infants · ICU",
-    description: "Amino acid solution for infants requiring parenteral nutrition. 100ML.",
-    price: 571, mrp: 672,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.7, review_count: 89, stock: 5,
-    prescription_required: true,
-    highlights: ["15% OFF", "Infant use", "100ML"],
-  },
-  {
-    id: "A175",
-    name: "Amnealyte Duo 500ML",
-    brand: "AMNEAL HEALTHCARE PVT LTD",
-    category: "IV Infusion",
-    usage: "Electrolyte Balance · Dehydration · IV Fluids",
-    description: "Dual electrolyte infusion solution 500ML for fluid & electrolyte replacement.",
-    price: 169, mrp: 422,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.4, review_count: 203, stock: 2,
-    prescription_required: true,
-    highlights: ["60% OFF", "500ML", "Electrolytes"],
-  },
-  {
-    id: "A349",
-    name: "Amnepara Duo 100ML",
-    brand: "AMNEAL HEALTHCARE PVT LTD",
-    category: "IV Infusion",
-    usage: "IV Nutrition · Parenteral · Critical Care",
-    description: "Combined parenteral nutrition solution 100ML for critical care patients.",
-    price: 301, mrp: 861,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.5, review_count: 118, stock: 6,
-    prescription_required: true,
-    highlights: ["65% OFF", "100ML", "Critical care"],
-  },
-  {
-    id: "A422",
-    name: "Amnezin Zinc Injection",
-    brand: "AMNEAL HEALTHCARE PVT LTD",
-    category: "Injection",
-    usage: "Zinc Deficiency · Wound Healing · Immunity",
-    description: "Zinc supplement injection for deficiency correction and wound healing support.",
-    price: 316, mrp: 703,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.3, review_count: 156, stock: 85,
-    prescription_required: true,
-    highlights: ["55% OFF", "Zinc supplement", "Rx required"],
-  },
-  {
-    id: "A65",
-    name: "Amphonex 50MG Injection",
-    brand: "BSV",
-    category: "Injection",
-    usage: "Antifungal · Fungal Infections · Immunocompromised",
-    description: "Amphotericin B 50MG injection for serious systemic fungal infections.",
-    price: 4880, mrp: 9760,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.6, review_count: 67, stock: 45,
-    prescription_required: true,
-    highlights: ["50% OFF", "50MG", "Antifungal"],
-  },
-  {
-    id: "A183",
-    name: "Akynzeo IV Injection",
-    brand: "FRESENIUS P.N",
-    category: "Injection",
-    usage: "Chemotherapy Nausea · Anti-emetic · Vomiting",
-    description: "IV antiemetic injection for prevention of chemo-induced nausea and vomiting.",
-    price: 4781, mrp: 5625,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.7, review_count: 43, stock: 3,
-    prescription_required: true,
-    highlights: ["15% OFF", "IV grade", "Rx required"],
-  },
-  {
-    id: "A313",
-    name: "Acaone 100MG 30Tab",
-    brand: "MSN LABORATORIES PVT.LTD",
-    category: "Tablets",
-    usage: "Osteoporosis · Bone Density · Calcium Metabolism",
-    description: "Alendronate 100MG tablet for osteoporosis treatment. 30 tablet pack.",
-    price: 10580, mrp: 17634,
-    image: "/medicines/tablet_strip.jpg",
-    rating: 4.4, review_count: 234, stock: 6,
-    prescription_required: true,
-    highlights: ["40% OFF", "30 tablets", "Bone health"],
-  },
-  {
-    id: "A247",
-    name: "Alburel OS 100ML",
-    brand: "RELIANCE",
-    category: "IV Infusion",
-    usage: "Oncology Support · Fluid Management · Surgery",
-    description: "Human albumin oral solution 100ML for nutritional and fluid management.",
-    price: 4875, mrp: 8864,
-    image: "/medicines/iv_infusion.jpg",
-    rating: 4.5, review_count: 91, stock: 6,
-    prescription_required: true,
-    highlights: ["45% OFF", "100ML", "Oncology use"],
-  },
-  {
-    id: "A352",
-    name: "Adalipca 30MG Injection",
-    brand: "LPCA",
-    category: "Injection",
-    usage: "Lipid Metabolism · Specialized Treatment",
-    description: "Specialized injection 30MG for lipid metabolism disorders. Hospital use only.",
-    price: 10000, mrp: 25000,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.3, review_count: 28, stock: 3,
-    prescription_required: true,
-    highlights: ["60% OFF", "Hospital use", "30MG"],
-  },
-  {
-    id: "A28",
-    name: "Adalirel 40MG Injection",
-    brand: "RELIANCE",
-    category: "Injection",
-    usage: "Rheumatoid Arthritis · Crohn's Disease · Psoriasis",
-    description: "Adalimumab biosimilar 40MG injection for autoimmune conditions.",
-    price: 8735, mrp: 24956,
-    image: "/medicines/injection_vial.jpg",
-    rating: 4.6, review_count: 52, stock: 5,
-    prescription_required: true,
-    highlights: ["65% OFF", "Biosimilar", "Rx required"],
-  },
-];
 
 // ── Individual Product Card ────────────────────────────────────────────────
 const MedicineCard = ({ product }) => {
@@ -551,31 +236,27 @@ const MedicineCard = ({ product }) => {
   );
 };
 
-// ── Section ────────────────────────────────────────────────────────────────
 const MedicineProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     (async () => {
       try {
         const res = await getProducts({});
-        const apiProducts = res.products || [];
-        if (apiProducts.length > 0) {
-          setProducts(apiProducts);
-        } else {
-          setProducts(STATIC_PRODUCTS);
-        }
+        setProducts(res.products || []);
       } catch {
-        setProducts(STATIC_PRODUCTS);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  const categories = ["All", "Tablets", "Capsules", "Injection", "IV Infusion", "Medical Device", "Surgical Supplies"];
+  // Derive category tabs dynamically from actual DB data
+  const rawCats = [...new Set(products.map(p => p.category || p.category_id || '').filter(Boolean))];
+  const categories = ['All', ...rawCats.slice(0, 6)];
 
   const filtered =
     activeCategory === "All"
@@ -641,11 +322,16 @@ const MedicineProducts = () => {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-96 bg-slate-100 animate-pulse rounded-3xl"
-              />
+              <div key={i} className="h-96 bg-slate-100 animate-pulse rounded-3xl" />
             ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl">
+            <Pill size={48} className="mx-auto mb-4 text-slate-200" />
+            <p className="font-bold text-slate-400 text-base">No products added yet</p>
+            <p className="text-sm text-slate-300 mt-2 max-w-sm mx-auto">
+              Go to the <strong>Admin Dashboard → Products</strong> tab and add your first product — it will appear here instantly.
+            </p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-slate-400">

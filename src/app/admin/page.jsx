@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Package, DollarSign, FileText, AlertCircle, TrendingUp, ShieldCheck, FileCode
+  Package, DollarSign, FileText, AlertCircle, TrendingUp, ShieldCheck, FileCode, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -19,6 +19,9 @@ import OrderTab from '../../components/admin/OrderTab';
 import PrescriptionTab from '../../components/admin/PrescriptionTab';
 import InventoryTab from '../../components/admin/InventoryTab';
 import ContentTab from '../../components/admin/ContentTab';
+import MedicinesTab from '../../components/admin/MedicinesTab';
+import InquiriesTab from '../../components/admin/InquiriesTab';
+import AmbulanceTab from '../../components/admin/AmbulanceTab';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -262,11 +265,14 @@ export default function AdminDashboardPage() {
       <div className="flex flex-wrap items-center gap-3 border-b border-slate-200 mb-8 pb-4">
         {[
           { id: 'overview', label: 'Overview Stats', icon: <TrendingUp size={16} /> },
-          { id: 'products', label: 'Product Management', icon: <Package size={16} /> },
-          { id: 'orders', label: 'Order Management', icon: <DollarSign size={16} /> },
-          { id: 'prescriptions', label: 'Prescription Approval', icon: <FileText size={16} /> },
-          { id: 'inventory', label: 'Inventory Tracking', icon: <AlertCircle size={16} /> },
-          { id: 'content', label: 'Content Management', icon: <FileCode size={16} /> }
+          { id: 'products', label: 'Products', icon: <Package size={16} /> },
+          { id: 'medicines', label: 'Medicines', icon: <ShieldCheck size={16} /> },
+          { id: 'orders', label: 'Orders', icon: <DollarSign size={16} /> },
+          { id: 'prescriptions', label: 'Prescriptions', icon: <FileText size={16} /> },
+          { id: 'inventory', label: 'Inventory', icon: <AlertCircle size={16} /> },
+          { id: 'content', label: 'Content', icon: <FileCode size={16} /> },
+          { id: 'inquiries', label: 'Inquiries', icon: <MessageSquare size={16} /> },
+          { id: 'ambulance', label: 'Ambulance', icon: <AlertCircle size={16} /> }
         ].map(tab => (
           <button
             key={tab.id}
@@ -285,13 +291,11 @@ export default function AdminDashboardPage() {
         )}
 
         {activeTab === 'products' && (
-          <ProductTab
-            bulkFile={bulkFile}
-            setBulkFile={setBulkFile}
-            uploadingBulk={uploadingBulk}
-            bulkSuccess={bulkSuccess}
-            handleBulkUpload={handleBulkUpload}
-          />
+          <ProductTab />
+        )}
+
+        {activeTab === 'medicines' && (
+          <MedicinesTab />
         )}
 
         {activeTab === 'orders' && (
@@ -323,6 +327,14 @@ export default function AdminDashboardPage() {
             handleCreateCoupon={handleCreateCoupon}
             handleDeleteCoupon={handleDeleteCoupon}
           />
+        )}
+
+        {activeTab === 'inquiries' && (
+          <InquiriesTab />
+        )}
+
+        {activeTab === 'ambulance' && (
+          <AmbulanceTab />
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -23,7 +23,9 @@ import {
   ShieldCheck,
   LogOut,
   AlertTriangle,
+  Package,
 } from "lucide-react";
+import ProductTab from "../../../components/admin/ProductTab";
 import MedicinesTab from "../../../components/admin/MedicinesTab";
 import OrdersTab from "../../../components/admin/OrdersTab";
 import UsersTab from "../../../components/admin/UsersTab";
@@ -34,35 +36,10 @@ import DeliveryTab from "../../../components/admin/DeliveryTab";
 import InventoryTrackingTab from "../../../components/admin/InventoryTrackingTab";
 import GSTBillingTab from "../../../components/admin/GSTBillingTab";
 
-const STATS = [
-  {
-    label: "Total Medicines",
-    value: "1,248",
-    icon: <Pill size={22} className="text-blue-600" />,
-    bg: "bg-blue-50",
-  },
-  {
-    label: "Total Orders",
-    value: "3,492",
-    icon: <ShoppingCart size={22} className="text-amber-600" />,
-    bg: "bg-amber-50",
-  },
-  {
-    label: "Total Users",
-    value: "8,392",
-    icon: <Users size={22} className="text-green-600" />,
-    bg: "bg-green-50",
-  },
-  {
-    label: "Total Revenue",
-    value: "₹4,28,900",
-    icon: <DollarSign size={22} className="text-purple-600" />,
-    bg: "bg-purple-50",
-  },
-];
 
 const NAV = [
   { id: "overview", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
+  { id: "products", label: "Products", icon: <Package size={18} /> },
   { id: "medicines", label: "Medicines", icon: <Pill size={18} /> },
   { id: "orders", label: "Orders", icon: <ShoppingCart size={18} /> },
   { id: "users", label: "Users", icon: <Users size={18} /> },
@@ -79,6 +56,61 @@ const NAV = [
 ];
 
 function Overview() {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { getAdminStats } = await import('../../../lib/api');
+        const res = await getAdminStats();
+        if (res.success) {
+          setStats(res.stats);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return <div className="animate-pulse space-y-6">
+      <div className="h-10 bg-slate-200 rounded w-1/4"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {[1,2,3,4].map(n => <div key={n} className="h-24 bg-slate-200 rounded-2xl"></div>)}
+      </div>
+    </div>;
+  }
+
+  const statCards = [
+    {
+      label: "Total Medicines",
+      value: stats?.totalProducts || 0,
+      icon: <Pill size={22} className="text-blue-600" />,
+      bg: "bg-blue-50",
+    },
+    {
+      label: "Total Orders",
+      value: stats?.totalOrders || 0,
+      icon: <ShoppingCart size={22} className="text-amber-600" />,
+      bg: "bg-amber-50",
+    },
+    {
+      label: "Total Users",
+      value: stats?.totalUsers || 0,
+      icon: <Users size={22} className="text-green-600" />,
+      bg: "bg-green-50",
+    },
+    {
+      label: "Total Revenue",
+      value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
+      icon: <DollarSign size={22} className="text-purple-600" />,
+      bg: "bg-purple-50",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -90,7 +122,7 @@ function Overview() {
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {STATS.map((s, i) => (
+        {statCards.map((s, i) => (
           <div
             key={i}
             className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition"
@@ -113,19 +145,19 @@ function Overview() {
         {[
           {
             label: "Pending Orders",
-            value: "12",
+            value: 0, // Mock pending orders or extract from stats if available
             color: "text-black-600",
             bg: "bg-black-50 border-black-200",
           },
           {
             label: "Pending Prescriptions",
-            value: "4",
+            value: stats?.pendingPrescriptions || 0,
             color: "text-black-600",
             bg: "bg-black-50 border-black-200",
           },
           {
             label: "Low Stock Items",
-            value: "7",
+            value: stats?.lowStockProducts || 0,
             color: "text-black-600",
             bg: "bg-black-50 border-black-200",
           },
@@ -264,18 +296,6 @@ function AdminLoginGate({ onSuccess }) {
           </div>
         </div>
 
-        {/* Demo credentials hint */}
-        <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center">
-          <p className="text-slate-300 text-xs font-bold mb-1">
-            Demo Credentials
-          </p>
-          <p className="text-blue-300 text-xs">
-            Email: <span className="font-mono">admin@paridhipharma.com</span>
-          </p>
-          <p className="text-blue-300 text-xs">
-            Password: <span className="font-mono">password123</span>
-          </p>
-        </div>
       </div>
     </div>
   );
@@ -308,6 +328,7 @@ export default function AdminDashboardPage() {
 
   const TABS = {
     overview: <Overview />,
+    products: <ProductTab />,
     medicines: <MedicinesTab />,
     orders: <OrdersTab />,
     users: <UsersTab />,

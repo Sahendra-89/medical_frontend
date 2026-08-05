@@ -11,12 +11,9 @@ if (isMissingCreds) {
 
 /**
  * Safe factory: only calls createClient when BOTH env vars are present.
- * During Vercel build (when env vars may be absent) this returns a stub
- * so the module loads without throwing "supabaseUrl is required".
  */
 function makeSafeClient(url, key, options = {}) {
   if (!url || !key) {
-    // Return a stub that no-ops all calls and returns empty data
     const noop = () => Promise.resolve({ data: null, error: new Error('Supabase not configured') });
     const stub = new Proxy({}, {
       get: () => stub,
@@ -27,13 +24,6 @@ function makeSafeClient(url, key, options = {}) {
   return createClient(url, key, options);
 }
 
-// Regular client — used for auth (login, signup, logout)
+// ── Single Shared Supabase Client ──
+// Use this everywhere on the frontend. It automatically includes the active user session.
 export const supabase = makeSafeClient(supabaseUrl, supabaseAnonKey);
-
-// Admin client — bypasses ALL RLS policies
-// This fixes the "infinite recursion detected in policy for relation profiles" error
-export const supabaseAdmin = makeSafeClient(
-  supabaseUrl,
-  supabaseAnonKey,
-  { auth: { persistSession: false } }
-);

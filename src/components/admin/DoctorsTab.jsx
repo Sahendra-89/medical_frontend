@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { Plus, Edit, Trash2, Stethoscope, CheckCircle } from 'lucide-react';
 
 const INIT = { name:'', specialization:'', clinic:'', phone:'', email:'', available:true };
-const SPECS = ['General Physician','Cardiologist','Diabetologist','Dermatologist','Orthopedic','Pediatrician','Neurologist','ENT Specialist'];
+const SPECS = ['General Physician','Cardiologist','Diabetologist','Dermatologist','Orthopedic','Pediatrician','Neurologist','ENT Specialist', 'Ayurveda Consultant and General Physician', 'Assistant Consultant'];
 
 const MOCK_DOCTORS = [
   { id:1, name:'Dr. S.K. Sharma', specialization:'General Physician', clinic:'Sharma Clinic, Sec-14, Gurgaon', phone:'9876543210', email:'dr.sharma@email.com', available:true },
   { id:2, name:'Dr. R. Mehta', specialization:'Diabetologist', clinic:'Mehta Diabetes Center, DLF Phase 3', phone:'8888877777', email:'dr.mehta@email.com', available:true },
   { id:3, name:'Dr. Priya Singh', specialization:'Dermatologist', clinic:'Skin Care Clinic, Cyber City', phone:'7777766666', email:'dr.priya@email.com', available:false },
+  { id:4, name:'Dr. Anuj Gupta', specialization:'Ayurveda Consultant and General Physician', clinic:'Consultant', phone:'', email:'', available:true },
+  { id:5, name:'Dr. Shailendra Kumar', specialization:'Assistant Consultant', clinic:'', phone:'9971421922', email:'', available:true },
 ];
 
 export default function DoctorsTab() {

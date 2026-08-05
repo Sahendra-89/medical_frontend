@@ -8,6 +8,7 @@ import {
   Send,
   CheckCircle,
   MessageSquare,
+  Stethoscope,
 } from "lucide-react";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { submitContactForm } from "../../lib/api";
@@ -73,10 +74,10 @@ export default function ContactPage() {
                 +91 98765 43210
               </a>
               <a
-                href="tel:01244567890"
+                href="tel:98765 43210"
                 className="text-xs font-bold text-medical-blue hover:underline block"
               >
-                0124-4567890
+                98765 43210
               </a>
             </div>
           </div>
@@ -121,6 +122,26 @@ export default function ContactPage() {
               <span className="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">
                 Open 7 Days a Week
               </span>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-card flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 shadow-inner">
+              <Stethoscope size={24} />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-slate-900 mb-1">
+                Doctor Consultation
+              </h4>
+              <p className="text-xs text-slate-500 mb-2">
+                Available for online prescription and medical advice
+              </p>
+              <a
+                href="tel:+919123456789"
+                className="text-xs font-bold text-medical-blue hover:underline block"
+              >
+                +91 91234 56789
+              </a>
             </div>
           </div>
         </div>

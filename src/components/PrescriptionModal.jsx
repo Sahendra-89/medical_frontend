@@ -1,12 +1,19 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, UploadCloud, FileText, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  X,
+  UploadCloud,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import { uploadPrescription } from "../lib/api";
 
 const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
   const [patientName, setPatientName] = useState("");
   const [doctorName, setDoctorName] = useState("");
+  const [doctorNumber, setDoctorNumber] = useState("");
   const [notes, setNotes] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -42,6 +49,7 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
       // Reset form
       setPatientName("");
       setDoctorName("");
+      setDoctorNumber("");
       setNotes("");
       setSelectedFile(null);
       setSuccessMsg("");
@@ -68,12 +76,21 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
     }
     setUploading(true);
     try {
-      const fileUrl =
-        selectedFile
-          ? URL.createObjectURL(selectedFile)
-          : "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400";
-      const res = await uploadPrescription({ fileUrl, patientName, doctorName, notes });
-      setSuccessMsg("Prescription uploaded successfully! Pharmacist approval pending.");
+      const fileUrl = selectedFile
+        ? URL.createObjectURL(selectedFile)
+        : "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400";
+      const finalNotes = doctorNumber.trim()
+        ? `Doctor Number: ${doctorNumber}\n${notes}`
+        : notes;
+      const res = await uploadPrescription({
+        fileUrl,
+        patientName,
+        doctorName,
+        notes: finalNotes,
+      });
+      setSuccessMsg(
+        "Prescription uploaded successfully! Pharmacist approval pending.",
+      );
       setTimeout(() => {
         setSuccessMsg("");
         setUploading(false);
@@ -147,7 +164,10 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
       {/* Backdrop */}
       <div
         className="rx-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: "rgba(15,23,42,0.65)", backdropFilter: "blur(6px)" }}
+        style={{
+          background: "rgba(15,23,42,0.65)",
+          backdropFilter: "blur(6px)",
+        }}
         onClick={(e) => e.target === e.currentTarget && handleClose()}
       >
         {/* Modal Card */}
@@ -158,7 +178,9 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
           {/* ── Header ── */}
           <div
             className="p-5 flex justify-between items-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)" }}
+            style={{
+              background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+            }}
           >
             <div className="flex items-center gap-3">
               <div
@@ -171,7 +193,10 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
                 <h3 className="font-bold text-white text-base leading-tight">
                   Upload Prescription
                 </h3>
-                <p className="text-xs mt-0.5" style={{ color: "rgba(148,163,184,1)" }}>
+                <p
+                  className="text-xs mt-0.5"
+                  style={{ color: "rgba(148,163,184,1)" }}
+                >
                   Required for Schedule H &amp; X medicines
                 </p>
               </div>
@@ -192,25 +217,33 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
                 <div className="rx-success-icon">
                   <div
                     className="w-20 h-20 rounded-full flex items-center justify-center mb-1"
-                    style={{ background: "linear-gradient(135deg,#d1fae5,#a7f3d0)" }}
+                    style={{
+                      background: "linear-gradient(135deg,#d1fae5,#a7f3d0)",
+                    }}
                   >
                     <CheckCircle size={48} className="text-emerald-600" />
                   </div>
                 </div>
-                <h4 className="font-bold text-lg text-slate-900 mt-2">Upload Successful!</h4>
-                <p className="text-sm text-slate-600 max-w-xs leading-relaxed">{successMsg}</p>
+                <h4 className="font-bold text-lg text-slate-900 mt-2">
+                  Upload Successful!
+                </h4>
+                <p className="text-sm text-slate-600 max-w-xs leading-relaxed">
+                  {successMsg}
+                </p>
                 <p className="text-xs text-slate-400 mt-1">
                   Our licensed pharmacist will review your prescription shortly.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
                 {/* ── Dropzone ── */}
                 <div
                   className={`rx-dropzone border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 ${dragOver ? "rx-dropzone-active" : "border-slate-200 bg-slate-50 hover:border-blue-400 hover:bg-blue-50"}`}
                   onClick={() => fileInputRef.current?.click()}
-                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleFileDrop}
                 >
@@ -227,9 +260,12 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
                   />
                   {selectedFile ? (
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-xs font-bold text-blue-600">{selectedFile.name}</span>
+                      <span className="text-xs font-bold text-blue-600">
+                        {selectedFile.name}
+                      </span>
                       <span className="text-[10px] text-slate-400">
-                        {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
+                        {(selectedFile.size / 1024).toFixed(1)} KB · Click to
+                        change
                       </span>
                     </div>
                   ) : (
@@ -262,13 +298,32 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Doctor Name <span className="text-slate-400 font-normal">(Optional)</span>
+                      Doctor Name{" "}
+                      <span className="text-slate-400 font-normal">
+                        (Optional)
+                      </span>
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g., Dr. Sharma"
+                      placeholder="Dr. Shailendra Kuma"
                       value={doctorName}
                       onChange={(e) => setDoctorName(e.target.value)}
+                      className="rx-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Doctor Number{" "}
+                      <span className="text-slate-400 font-normal">
+                        (Optional)
+                      </span>
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="e.g., +91 "
+                      value={doctorNumber}
+                      onChange={(e) => setDoctorNumber(e.target.value)}
                       className="rx-input w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none transition-all duration-200"
                     />
                   </div>
@@ -289,11 +344,17 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
 
                 {/* ── Warning ── */}
                 <div className="flex gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-[11px] text-amber-800 leading-relaxed">
-                  <AlertCircle size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                  <AlertCircle
+                    size={14}
+                    className="text-amber-500 flex-shrink-0 mt-0.5"
+                  />
                   <span>
-                    <span className="font-bold">Pharmacist Verification Notice: </span>
-                    As per the Drugs &amp; Cosmetics Act, all prescription orders are subject
-                    to verification by our registered pharmacist before dispatch.
+                    <span className="font-bold">
+                      Pharmacist Verification Notice:{" "}
+                    </span>
+                    As per the Drugs &amp; Cosmetics Act, all prescription
+                    orders are subject to verification by our registered
+                    pharmacist before dispatch.
                   </span>
                 </div>
 
@@ -310,13 +371,27 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
                     type="submit"
                     disabled={uploading}
                     className="rx-submit-btn px-6 py-2.5 rounded-xl text-white font-bold text-xs transition-all duration-200 shadow-md flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                    style={{ background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" }}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+                    }}
                   >
                     {uploading ? (
                       <>
-                        <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" opacity="0.25"/>
-                          <path d="M21 12a9 9 0 0 1-9 9"/>
+                        <svg
+                          className="animate-spin"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                        >
+                          <path
+                            d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
+                            opacity="0.25"
+                          />
+                          <path d="M21 12a9 9 0 0 1-9 9" />
                         </svg>
                         Uploading...
                       </>

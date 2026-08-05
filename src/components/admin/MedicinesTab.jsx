@@ -1,181 +1,368 @@
-"use client";
-import { useState, useEffect, useRef } from 'react';
-import { Plus, Edit, Trash2, Search, UploadCloud, CheckCircle, X } from 'lucide-react';
-import { getMedicines, createMedicine, updateMedicine, deleteMedicine, importMedicines, uploadImage } from '../../lib/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Edit, Trash2, Search, Pill, Upload, CheckCircle, XCircle, Image as ImageIcon } from 'lucide-react';
+import { getMedicines, createMedicine, updateMedicine, deleteMedicine, uploadImage } from '../../lib/api';
 
-const EMPTY = { medicine_name:'', company_name:'', price:'', category:'Tablets', description:'', usage:'', dosage:'', side_effects:'', precautions:'', stock_quantity:'', image_url:'' };
-const CATS = ['Tablets','Capsules','Injections','Syrups','Nutrition Products','Surgical Products','Devices','OTC'];
+const EMPTY_FORM = {
+  medicine_name: '', company_name: '', category: 'Tablets',
+  price: '', stock_quantity: 0, description: '', usage: '',
+  side_effects: '', dosage: '', precautions: '',
+  prescription_required: false, image_url: ''
+};
+
+const CATEGORIES = [
+  'Tablets', 'Capsules', 'Injection', 'IV Infusion', 'Syrup', 'Drops',
+  'Cream / Ointment', 'Medical Device', 'Surgical Supplies', 'Other'
+];
+
+function Toast({ message, type, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 3500);
+    return () => clearTimeout(t);
+  }, [onClose]);
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-bold text-white ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
+      {type === 'success' ? <CheckCircle size={18} /> : <XCircle size={18} />}
+      {message}
+    </div>
+  );
+}
 
 export default function MedicinesTab() {
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState(EMPTY);
-  const [success, setSuccess] = useState('');
-  const [csvMsg, setCsvMsg] = useState('');
-  const [uploadingImg, setUploadingImg] = useState(false);
-  const csvRef = useRef();
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const fileRef = useRef();
 
-  const load = async () => { setLoading(true); const r = await getMedicines({search,limit:200}); if(r.success) setMedicines(r.data||[]); setLoading(false); };
-  useEffect(()=>{ load(); },[search]);
+  const showToast = (message, type = 'success') => setToast({ message, type });
 
-  const flash = (msg) => { setSuccess(msg); setTimeout(()=>setSuccess(''),3000); };
+  const fetchMedicines = async () => {
+    setLoading(true);
+    const res = await getMedicines({ search: search || undefined });
+    if (res.success) setMedicines(res.data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchMedicines(); }, [search]);
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingImg(true);
-    const res = await uploadImage(file);
-    if (res.success) {
-      setForm({...form, image_url: res.imageUrl});
-      flash('Image uploaded successfully!');
-    } else {
-      alert('Upload failed: ' + res.message);
+    setUploading(true);
+    try {
+      const res = await uploadImage(file);
+      if (res.success) {
+        setForm(f => ({ ...f, image_url: res.imageUrl }));
+        showToast('Image uploaded!');
+      } else {
+        showToast('Upload failed', 'error');
+      }
+    } catch {
+      showToast('Upload failed', 'error');
+    } finally {
+      setUploading(false);
     }
-    setUploadingImg(false);
-    e.target.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const payload = {
-      ...form,
-      price: parseFloat(form.price) || 0,
-      stock_quantity: parseInt(form.stock_quantity, 10) || 0
-    };
-
-    let res;
+    if (!form.medicine_name || !form.price) {
+      showToast('Medicine name and price are required', 'error');
+      return;
+    }
+    setSaving(true);
     try {
-      if(editId) res = await updateMedicine(editId, payload);
-      else res = await createMedicine(payload);
-
-      if (res?.success || res?.message?.includes('success')) {
-        setShowForm(false); setEditId(null); setForm(EMPTY);
-        flash(editId ? 'Medicine updated!' : 'Medicine added!');
-        load();
+      const payload = {
+        ...form,
+        price: parseFloat(form.price),
+        stock_quantity: parseInt(form.stock_quantity) || 0,
+      };
+      if (editingId) {
+        await updateMedicine(editingId, payload);
+        showToast('Medicine updated successfully!');
       } else {
-        alert('Failed to save medicine: ' + (res?.message || res?.error?.message || 'Check database connection'));
+        await createMedicine(payload);
+        showToast('Medicine added successfully!');
       }
-    } catch (err) {
-      alert('Failed to save medicine: ' + (err?.message || err || 'Check database connection'));
+      setShowForm(false);
+      setEditingId(null);
+      setForm(EMPTY_FORM);
+      fetchMedicines();
+    } catch {
+      showToast('Failed to save medicine', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleEdit = (m) => { setForm(m); setEditId(m.id); setShowForm(true); window.scrollTo(0,0); };
-
-  const handleDelete = async (id) => {
-    if(!confirm('Delete this medicine?')) return;
-    await deleteMedicine(id); flash('Medicine deleted.'); load();
+  const handleEdit = (m) => {
+    setForm({
+      medicine_name: m.medicine_name || '',
+      company_name: m.company_name || '',
+      category: m.category || 'Tablets',
+      price: m.price || '',
+      stock_quantity: m.stock_quantity || 0,
+      description: m.description || '',
+      usage: m.usage || '',
+      side_effects: m.side_effects || '',
+      dosage: m.dosage || '',
+      precautions: m.precautions || '',
+      prescription_required: m.prescription_required || false,
+      image_url: m.image_url || '',
+    });
+    setEditingId(m.id);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCSV = (e) => {
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      try {
-        const lines = ev.target.result.split('\n').filter(Boolean);
-        const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.trim().toLowerCase().replace(/"/g,''));
-        const rows = lines.slice(1).map(line => {
-          const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v=>v.trim().replace(/^"|"$/g,''));
-          const obj = {}; headers.forEach((h,i)=>{ obj[h]=vals[i]||''; }); return obj;
-        });
-        const r = await importMedicines(rows);
-        if (r.success || r.message?.includes('successfully')) {
-          setCsvMsg(r.message || 'Imported!');
-        } else {
-          setCsvMsg('Failed: ' + (r.message || r.error?.message || 'Unknown error'));
-        }
-        load();
-        setTimeout(()=>setCsvMsg(''), 5000);
-      } catch (err) { setCsvMsg('Failed to parse CSV: ' + err.message); }
-    };
-    reader.readAsText(file);
-    e.target.value='';
+  const handleDelete = async (id, name) => {
+    if (!confirm(`Delete "${name}"?`)) return;
+    await deleteMedicine(id);
+    showToast('Medicine deleted');
+    fetchMedicines();
   };
-
-  const inp = 'w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-500';
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap justify-between items-center gap-3">
-        <h2 className="text-lg font-black text-slate-900">Medicine Catalog</h2>
-        <div className="flex gap-2 flex-wrap">
-          <label className="flex items-center gap-1.5 bg-green-600 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer hover:bg-green-700 transition">
-            <UploadCloud size={14}/> Upload CSV <input type="file" accept=".csv,.json" className="hidden" ref={csvRef} onChange={handleCSV}/>
-          </label>
-          <button onClick={()=>{setShowForm(!showForm);setEditId(null);setForm(EMPTY);}} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition">
-            <Plus size={14}/> {showForm?'Cancel':'Add Medicine'}
-          </button>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <Pill className="text-medical-blue" size={22} /> Medicines Management
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Manage your medicines database. These appear on the Medicine & Shop pages.
+          </p>
         </div>
+        <button
+          onClick={() => { setShowForm(!showForm); setEditingId(null); setForm(EMPTY_FORM); }}
+          className="bg-medical-blue text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md hover:bg-blue-600 transition flex items-center gap-1.5"
+        >
+          <Plus size={16} />
+          {showForm && !editingId ? 'Cancel' : 'Add Medicine'}
+        </button>
       </div>
 
-      {success && <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2"><CheckCircle size={14}/>{success}</div>}
-      {csvMsg && <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold">{csvMsg}</div>}
-
+      {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <h3 className="sm:col-span-2 font-bold text-sm text-slate-800">{editId?'Edit Medicine':'Add New Medicine'}</h3>
-          <input required placeholder="Medicine Name*" className={inp} value={form.medicine_name} onChange={e=>setForm({...form,medicine_name:e.target.value})}/>
-          <input required placeholder="Company/Brand*" className={inp} value={form.company_name} onChange={e=>setForm({...form,company_name:e.target.value})}/>
-          <input required type="number" step="0.01" placeholder="Price (₹)*" className={inp} value={form.price} onChange={e=>setForm({...form,price:e.target.value})}/>
-          <select className={inp} value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>
-            {CATS.map(c=><option key={c}>{c}</option>)}
-          </select>
-          <input type="number" placeholder="Stock Quantity" className={inp} value={form.stock_quantity} onChange={e=>setForm({...form,stock_quantity:e.target.value})}/>
-          
-          {/* Enhanced Image Field */}
-          <div className="flex gap-2">
-            <input type="url" placeholder="Image URL (or upload ->)" className={`${inp} flex-1`} value={form.image_url} onChange={e=>setForm({...form,image_url:e.target.value})}/>
-            <label className="flex items-center justify-center bg-slate-200 hover:bg-slate-300 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition">
-              {uploadingImg ? 'Uploading...' : 'Upload'}
-              <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImg}/>
+        <form onSubmit={handleSubmit} className="bg-gradient-to-br from-teal-50 to-slate-50 p-6 rounded-2xl border border-teal-100 shadow-inner space-y-5">
+          <h3 className="font-bold text-slate-800 flex items-center gap-2">
+            {editingId
+              ? <><Edit size={16} className="text-teal-500" /> Edit Medicine</>
+              : <><Plus size={16} className="text-teal-500" /> Add New Medicine</>}
+          </h3>
+
+          {/* Image Section */}
+          <div className="flex items-start gap-4">
+            <div className="w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden bg-white flex-shrink-0">
+              {form.image_url ? (
+                <img src={form.image_url} alt="preview" className="w-full h-full object-contain"
+                  onError={e => { e.target.src = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200'; }} />
+              ) : (
+                <ImageIcon size={28} className="text-slate-300" />
+              )}
+            </div>
+            <div className="flex-1 space-y-2">
+              <label className="text-xs font-bold text-slate-600">Medicine Image</label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  placeholder="Paste image URL..."
+                  className="flex-1 p-2.5 rounded-xl text-xs border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                  value={form.image_url}
+                  onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold px-3 py-2 rounded-xl text-xs transition disabled:opacity-50"
+                >
+                  <Upload size={13} />
+                  {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            </div>
+          </div>
+
+          {/* Fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Medicine Name *</label>
+              <input required type="text" placeholder="e.g. Crocin 500mg 10Tab"
+                className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.medicine_name} onChange={e => setForm(f => ({ ...f, medicine_name: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Company / Brand *</label>
+              <input required type="text" placeholder="e.g. GSK, Cipla, Sun Pharma"
+                className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.company_name} onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Category</label>
+              <select className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Price (₹) *</label>
+              <input required type="number" step="0.01" min="0" placeholder="e.g. 35.00"
+                className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Stock Quantity</label>
+              <input type="number" min="0" placeholder="0"
+                className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.stock_quantity} onChange={e => setForm(f => ({ ...f, stock_quantity: e.target.value }))} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Dosage</label>
+              <input type="text" placeholder="e.g. 1 tablet twice daily"
+                className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+                value={form.dosage} onChange={e => setForm(f => ({ ...f, dosage: e.target.value }))} />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Description</label>
+            <textarea rows={2} placeholder="Brief description of what this medicine treats..."
+              className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white resize-none"
+              value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Usage / Indications</label>
+            <input type="text" placeholder="e.g. Fever · Headache · Pain Relief"
+              className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+              value={form.usage} onChange={e => setForm(f => ({ ...f, usage: e.target.value }))} />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1 block">Side Effects</label>
+            <input type="text" placeholder="e.g. Nausea, Dizziness (rare)"
+              className="w-full p-3 rounded-xl text-sm border border-slate-200 outline-none focus:border-teal-400 bg-white"
+              value={form.side_effects} onChange={e => setForm(f => ({ ...f, side_effects: e.target.value }))} />
+          </div>
+
+          <div className="flex items-center gap-3 pt-2 border-t border-slate-200">
+            <label className="flex items-center gap-2 text-xs font-bold text-amber-700 cursor-pointer select-none">
+              <input type="checkbox" checked={form.prescription_required}
+                onChange={e => setForm(f => ({ ...f, prescription_required: e.target.checked }))}
+                className="w-4 h-4 rounded accent-amber-500" />
+              Prescription (Rx) Required
             </label>
           </div>
 
-          <textarea placeholder="Description" rows={2} className={`${inp} sm:col-span-2 resize-none`} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/>
-          <textarea placeholder="Usage" rows={2} className={`${inp} resize-none`} value={form.usage} onChange={e=>setForm({...form,usage:e.target.value})}/>
-          <textarea placeholder="Dosage" rows={2} className={`${inp} resize-none`} value={form.dosage} onChange={e=>setForm({...form,dosage:e.target.value})}/>
-          <textarea placeholder="Side Effects" rows={2} className={`${inp} resize-none`} value={form.side_effects} onChange={e=>setForm({...form,side_effects:e.target.value})}/>
-          <textarea placeholder="Precautions" rows={2} className={`${inp} resize-none`} value={form.precautions} onChange={e=>setForm({...form,precautions:e.target.value})}/>
-          <div className="sm:col-span-2 flex justify-end gap-2">
-            <button type="button" onClick={()=>setShowForm(false)} className="px-5 py-2 rounded-xl border text-xs font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
-            <button type="submit" className="px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700">{editId?'Update':'Save Medicine'}</button>
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button"
+              onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_FORM); }}
+              className="px-6 py-2.5 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-100 transition">
+              Cancel
+            </button>
+            <button type="submit" disabled={saving}
+              className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold px-8 py-2.5 rounded-xl transition shadow-md text-xs disabled:opacity-60">
+              {saving ? 'Saving...' : editingId ? '✅ Update Medicine' : '✅ Save Medicine'}
+            </button>
           </div>
         </form>
       )}
 
-      <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2">
-        <Search size={14} className="text-slate-400"/>
-        <input className="flex-1 text-xs outline-none" placeholder="Search medicines..." value={search} onChange={e=>setSearch(e.target.value)}/>
-        {search && <button onClick={()=>setSearch('')}><X size={14} className="text-slate-400"/></button>}
-      </div>
-
-      <div className="overflow-x-auto rounded-2xl border border-slate-200">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 text-slate-500 font-bold border-b">
-            <tr>{['Medicine','Company','Category','Price','Stock','Actions'].map(h=><th key={h} className="px-4 py-3">{h}</th>)}</tr>
-          </thead>
-          <tbody>
-            {loading ? <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Loading...</td></tr>
-            : medicines.length===0 ? <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">No medicines found.</td></tr>
-            : medicines.map(m=>(
-              <tr key={m.id} className="border-b hover:bg-slate-50 transition">
-                <td className="px-4 py-3 font-bold text-slate-800 max-w-[180px] truncate">{m.medicine_name}</td>
-                <td className="px-4 py-3 text-slate-600">{m.company_name}</td>
-                <td className="px-4 py-3"><span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">{m.category}</span></td>
-                <td className="px-4 py-3 font-bold text-green-700">₹{m.price}</td>
-                <td className="px-4 py-3 font-bold">{m.stock_quantity>0?<span className="text-green-600">{m.stock_quantity}</span>:<span className="text-red-500">Out</span>}</td>
-                <td className="px-4 py-3 flex gap-2">
-                  <button onClick={()=>handleEdit(m)} className="p-1.5 bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-lg transition"><Edit size={14}/></button>
-                  <button onClick={()=>handleDelete(m.id)} className="p-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-500 rounded-lg transition"><Trash2 size={14}/></button>
-                </td>
+      {/* Table */}
+      <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+        <div className="p-4 border-b flex items-center bg-slate-50 gap-2">
+          <Search size={16} className="text-slate-400" />
+          <input type="text" placeholder="Search medicines by name or company..."
+            className="bg-transparent border-none outline-none text-sm w-full"
+            value={search} onChange={e => setSearch(e.target.value)} />
+          <span className="text-xs text-slate-400 font-bold whitespace-nowrap">{medicines.length} medicines</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+              <tr>
+                <th className="p-4">Medicine</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Price</th>
+                <th className="p-4">Stock</th>
+                <th className="p-4">Type</th>
+                <th className="p-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {loading ? (
+                [...Array(4)].map((_, i) => (
+                  <tr key={i} className="border-b border-slate-100">
+                    {[...Array(6)].map((__, j) => (
+                      <td key={j} className="p-4"><div className="h-4 bg-slate-100 rounded animate-pulse" /></td>
+                    ))}
+                  </tr>
+                ))
+              ) : medicines.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="p-12 text-center">
+                    <Pill size={40} className="mx-auto mb-3 text-slate-200" />
+                    <p className="font-bold text-slate-400 text-sm">No medicines yet</p>
+                    <p className="text-xs text-slate-300 mt-1">Click &quot;Add Medicine&quot; to add your first medicine.</p>
+                  </td>
+                </tr>
+              ) : medicines.map(m => (
+                <tr key={m.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg border border-slate-100 overflow-hidden flex-shrink-0 bg-slate-50">
+                        <img
+                          src={m.image_url || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=80'}
+                          alt={m.medicine_name}
+                          className="w-full h-full object-contain"
+                          onError={e => { e.target.src = 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=80'; }}
+                        />
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-800 block text-xs leading-tight">{m.medicine_name}</span>
+                        <span className="text-[10px] text-slate-400">{m.company_name}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <span className="bg-teal-100 text-teal-700 text-[10px] font-bold px-2.5 py-1 rounded-full">{m.category}</span>
+                  </td>
+                  <td className="p-4 font-bold text-green-600 text-xs">₹{m.price}</td>
+                  <td className="p-4 font-bold text-xs">
+                    {m.stock_quantity > 10
+                      ? <span className="text-green-600">{m.stock_quantity}</span>
+                      : m.stock_quantity > 0
+                        ? <span className="text-orange-500">{m.stock_quantity} Low</span>
+                        : <span className="text-red-500">Out</span>}
+                  </td>
+                  <td className="p-4">
+                    {m.prescription_required
+                      ? <span className="bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-0.5 rounded-full">Rx Required</span>
+                      : <span className="bg-green-100 text-green-700 text-[9px] font-black px-2 py-0.5 rounded-full">OTC</span>}
+                  </td>
+                  <td className="p-4 flex gap-2">
+                    <button onClick={() => handleEdit(m)} title="Edit"
+                      className="p-2 bg-slate-100 hover:bg-teal-50 hover:text-teal-600 text-slate-600 rounded-lg transition">
+                      <Edit size={14} />
+                    </button>
+                    <button onClick={() => handleDelete(m.id, m.medicine_name)} title="Delete"
+                      className="p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition">
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -24,129 +24,6 @@ const HOME_ICONS = [
   { img: '🛒', title: 'Value Store', sub: 'UPTO 50% OFF', link: '/shop' },
 ];
 
-// ── Static catalog products (always visible, no API dependency) ──
-const STATIC_CATALOG_PRODUCTS = [
-  {
-    id: 'cat-1',
-    name: 'Paracetamol 500mg Strip',
-    brand: 'Cipla Ltd.',
-    description: 'Fast-acting pain relief & fever reducer. Strip of 10 tablets.',
-    price: 35,
-    mrp: 52,
-    image: '/medicines/paracetamol.jpg',
-    rating: 4.7,
-    review_count: 2340,
-    stock: 150,
-    is_bestseller: true,
-    prescription_required: false,
-    discount_percent: 33,
-  },
-  {
-    id: 'cat-2',
-    name: 'Honitus Cough Syrup 100ml',
-    brand: 'Dabur India',
-    description: 'Ayurvedic cough formula with Tulsi, Honey & Mulethi.',
-    price: 95,
-    mrp: 130,
-    image: '/medicines/cough_syrup.jpg',
-    rating: 4.5,
-    review_count: 1856,
-    stock: 85,
-    is_bestseller: true,
-    prescription_required: false,
-    discount_percent: 27,
-  },
-  {
-    id: 'cat-3',
-    name: 'Boroline Antiseptic Cream 20g',
-    brand: 'G.D. Pharmaceuticals',
-    description: 'Night repair antiseptic cream for cuts, cracks & dry skin.',
-    price: 42,
-    mrp: 55,
-    image: '/medicines/antiseptic_cream.jpg',
-    rating: 4.6,
-    review_count: 3120,
-    stock: 200,
-    is_bestseller: false,
-    prescription_required: false,
-    discount_percent: 24,
-  },
-  {
-    id: 'cat-4',
-    name: 'Vitamin D3 2000 IU Capsules',
-    brand: 'HealthKart',
-    description: '60 capsules — supports bone health, immunity & calcium absorption.',
-    price: 349,
-    mrp: 499,
-    image: '/medicines/vitamin_d3.jpg',
-    rating: 4.8,
-    review_count: 4580,
-    stock: 120,
-    is_bestseller: true,
-    prescription_required: false,
-    discount_percent: 30,
-  },
-  {
-    id: 'cat-5',
-    name: 'Omega-3 Fish Oil 1000mg',
-    brand: 'Healthvit',
-    description: 'Triple-strength EPA & DHA for heart, brain & joint health.',
-    price: 425,
-    mrp: 699,
-    image: '/medicines/omega3.jpg',
-    rating: 4.4,
-    review_count: 1290,
-    stock: 75,
-    is_bestseller: false,
-    prescription_required: false,
-    discount_percent: 39,
-  },
-  {
-    id: 'cat-6',
-    name: 'Dr. Morepen BP Monitor BPOne',
-    brand: 'Dr. Morepen',
-    description: 'Fully automatic digital BP monitor with WHO indicator.',
-    price: 999,
-    mrp: 1799,
-    image: '/medicines/bp_monitor.jpg',
-    rating: 4.3,
-    review_count: 876,
-    stock: 40,
-    is_bestseller: false,
-    prescription_required: false,
-    discount_percent: 44,
-  },
-  {
-    id: 'cat-7',
-    name: 'Dolo 650 Paracetamol Tablets',
-    brand: 'Micro Labs',
-    description: 'Trusted fever & headache relief. Strip of 15 tablets.',
-    price: 30,
-    mrp: 35,
-    image: '/medicines/paracetamol.jpg',
-    rating: 4.9,
-    review_count: 8640,
-    stock: 300,
-    is_bestseller: true,
-    prescription_required: false,
-    discount_percent: 14,
-  },
-  {
-    id: 'cat-8',
-    name: 'Benadryl Cough Formula 150ml',
-    brand: 'Johnson & Johnson',
-    description: 'Fast relief from dry & wet cough. Non-drowsy formula.',
-    price: 115,
-    mrp: 145,
-    image: '/medicines/cough_syrup.jpg',
-    rating: 4.3,
-    review_count: 1540,
-    stock: 60,
-    is_bestseller: false,
-    prescription_required: false,
-    discount_percent: 21,
-  },
-];
 
 export default function HomePage() {
   const [search, setSearch] = useState('');
@@ -174,16 +51,11 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getProducts({}); // Fetch all without limit
-        const apiProducts = res.products || [];
-        // Merge API products with static catalog; static products fill in if API returns few/none
-        const existingIds = new Set(apiProducts.map(p => p.id));
-        const extras = STATIC_CATALOG_PRODUCTS.filter(p => !existingIds.has(p.id));
-        setAllProducts([...apiProducts, ...extras]);
+        const res = await getProducts({});
+        setAllProducts(res.products || []);
       } catch (err) {
         console.error(err);
-        // On error, fall back to static products so the section is never empty
-        setAllProducts(STATIC_CATALOG_PRODUCTS);
+        setAllProducts([]);
       } finally {
         setLoading(false);
       }
@@ -255,6 +127,14 @@ export default function HomePage() {
           {loading ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
               {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <div key={n} className="h-80 bg-slate-100 animate-pulse rounded-2xl" />)}
+            </div>
+          ) : allProducts.length === 0 ? (
+            <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl">
+              <div className="text-5xl mb-4">💊</div>
+              <p className="font-bold text-slate-400 text-base">No products added yet</p>
+              <p className="text-sm text-slate-300 mt-2">
+                Admin: Go to Dashboard → Products to add medicines.
+              </p>
             </div>
           ) : (
             <>

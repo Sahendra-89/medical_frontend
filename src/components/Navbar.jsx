@@ -674,39 +674,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Right Sidebar - Featured Image */}
-              <div className="w-72 bg-slate-50/50 py-6 px-6 hidden lg:flex flex-col border-l border-slate-100">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
-                  Featured in {activeMegaCategory}
-                </p>
-                {MEGA_MENU_IMAGES[activeMegaCategory] ? (
-                  <div className="group relative bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-                    <div className="relative pt-[100%] bg-white">
-                      <img
-                        src={MEGA_MENU_IMAGES[activeMegaCategory].src}
-                        alt={MEGA_MENU_IMAGES[activeMegaCategory].alt}
-                        className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="p-4 border-t border-slate-50 bg-gradient-to-b from-white to-slate-50">
-                      <p className="font-bold text-sm text-slate-900 truncate">
-                        {MEGA_MENU_IMAGES[activeMegaCategory].label}
-                      </p>
-                      <Link
-                        href={`/shop?category=${encodeURIComponent(activeMegaCategory)}`}
-                        onClick={() => setActiveDropdown(null)}
-                        className="text-xs font-bold text-medical-blue mt-2 inline-flex items-center gap-1 hover:underline"
-                      >
-                        Shop Now <ChevronRight size={12} />
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="h-48 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center">
-                    <Pill size={32} className="text-slate-300" />
-                  </div>
-                )}
-              </div>
+
             </div>
           </div>
         )}

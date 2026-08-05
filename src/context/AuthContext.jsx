@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase, supabaseAdmin } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
 
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
    */
   const enrichUser = async (authUser) => {
     try {
-      const { data: profile } = await supabaseAdmin
+      const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)

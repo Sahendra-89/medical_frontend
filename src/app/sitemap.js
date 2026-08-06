@@ -2,7 +2,7 @@
 // Next.js will serve this at /sitemap.xml
 
 export default function sitemap() {
-  const baseUrl = 'https://paridhipharma.com'; // 🔁 Update to your actual domain
+  const baseUrl = 'https://www.pridhipharma.in';
 
   const staticRoutes = [
     { url: `${baseUrl}/`,              priority: 1.0,  changeFrequency: 'daily'   },

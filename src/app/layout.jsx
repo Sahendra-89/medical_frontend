@@ -5,30 +5,34 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export const metadata = {
+  metadataBase: new URL('https://www.pridhipharma.in'),
   title: {
-    default: 'Paridhi Pharma | Buy Medicines Online — Trusted Pharmacy India',
-    template: '%s | Paridhi Pharma',
+    default: 'Pridhi Pharma | Buy Medicines Online — Trusted Pharmacy India',
+    template: '%s | Pridhi Pharma',
   },
   description:
-    'Paridhi Pharma — India\'s trusted online pharmacy serving Gurgaon, Delhi & Faridabad. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products with fast same-day delivery.',
+    'Pridhi Pharma — India\'s trusted online pharmacy. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products with fast delivery.',
   keywords:
-    'buy medicines online, online pharmacy India, Paridhi Pharma, genuine medicines, prescription medicines online, medical devices, pharmacy Gurgaon, pharmacy Delhi NCR',
+    'buy medicines online, online pharmacy India, Pridhi Pharma, genuine medicines, prescription medicines online, medical devices, pridhipharma.in',
   openGraph: {
-    title: 'Paridhi Pharma | Buy Medicines Online',
+    title: 'Pridhi Pharma | Buy Medicines Online',
     description:
       'Trusted online pharmacy with genuine medicines, fast delivery & licensed pharmacists.',
-    url: 'https://paridhipharma.com',
-    siteName: 'Paridhi Pharma',
+    url: 'https://www.pridhipharma.in',
+    siteName: 'Pridhi Pharma',
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Paridhi Pharma | Buy Medicines Online',
-    description: 'Genuine medicines & healthcare devices — fast delivery in Delhi NCR.',
+    title: 'Pridhi Pharma | Buy Medicines Online',
+    description: 'Genuine medicines & healthcare devices — fast delivery across India.',
   },
   alternates: {
-    canonical: 'https://paridhipharma.com',
+    canonical: 'https://www.pridhipharma.in',
+  },
+  verification: {
+    google: 'd5e6afae5f41e541',
   },
   robots: {
     index: true,

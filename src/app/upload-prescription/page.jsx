@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Link from "next/link";
+import { uploadPrescription } from "../../lib/api";
 import {
   Upload,
   ChevronRight,
@@ -29,12 +30,29 @@ export default function UploadPrescriptionPage() {
     const selected = e.target.files[0];
     if (selected) {
       setFile(selected);
-      // Simulate upload delay
       setUploading(true);
-      setTimeout(() => {
-        setUploading(false);
-        setSuccess(true);
-      }, 1500);
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Data = event.target.result;
+        try {
+          await uploadPrescription({
+            image_data: base64Data,
+            patient_name: "Web Customer",
+            notes: "Uploaded via website",
+            approval_status: "pending",
+          }, selected);
+          setSuccess(true);
+        } catch (err) {
+          console.error("Database upload failed", err);
+          alert("Failed to save to database: " + err.message);
+          setSuccess(false);
+          setFile(null);
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.readAsDataURL(selected);
     }
   };
 
@@ -209,10 +227,7 @@ export default function UploadPrescriptionPage() {
             </button>
           </div>
 
-          {/* Bottom Discount Banner */}
-          <div className="bg-blue-50/80 border-t border-blue-100 p-4 sm:p-5 flex items-center gap-3">
-            <Percent size={20} className="text-blue-500" />
-          </div>
+
         </div>
 
         {/* Right Card - How it works */}
@@ -222,57 +237,57 @@ export default function UploadPrescriptionPage() {
           </h2>
 
           <div className="space-y-4">
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-black text-xl relative">
                 1
               </div>
               <div>
-                <p className="text-sm text-slate-700 font-medium pt-1">
+                <p className="text-sm text-slate-700 font-medium">
                   Pharmacist will check items on prescription and add to cart
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-black text-xl relative">
                 2
                 <div className="absolute -bottom-1 -right-1 text-xs bg-white rounded-full p-0.5 shadow-sm border border-slate-100"></div>
               </div>
               <div>
-                <p className="text-sm text-slate-700 font-medium pt-1">
+                <p className="text-sm text-slate-700 font-medium">
                   You can ask for additional items if needed
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-black text-xl relative">
                 3
               </div>
               <div>
-                <p className="text-sm text-slate-700 font-medium pt-1">
+                <p className="text-sm text-slate-700 font-medium">
                   They will apply the best coupon & get you the max savings
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-black text-xl relative">
                 4
               </div>
               <div>
-                <p className="text-sm text-slate-700 font-medium pt-1">
+                <p className="text-sm text-slate-700 font-medium">
                   Choose the earliest delivery date
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center font-black text-xl relative">
                 5
               </div>
               <div>
-                <p className="text-sm text-slate-700 font-medium pt-1">
+                <p className="text-sm text-slate-700 font-medium">
                   Finally, Share payment methods options
                 </p>
               </div>

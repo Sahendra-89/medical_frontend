@@ -64,8 +64,8 @@ export default function PrescriptionsAdminTab() {
         ) : filtered.map(rx=>(
           <div key={rx.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-4">
-              <a href={rx.file_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                <img src={rx.file_url || 'https://images.unsplash.com/photo-1585435557343-3b092031a831?w=200'} alt="Prescription" className="w-16 h-16 object-cover rounded-xl border border-slate-200 hover:opacity-80 transition"/>
+              <a href={rx.image_url || rx.image_data || rx.file_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                <img src={rx.image_url || rx.image_data || rx.file_url || 'https://images.unsplash.com/photo-1585435557343-3b092031a831?w=200'} alt="Prescription" className="w-16 h-16 object-cover rounded-xl border border-slate-200 hover:opacity-80 transition"/>
               </a>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap justify-between gap-2 mb-1">

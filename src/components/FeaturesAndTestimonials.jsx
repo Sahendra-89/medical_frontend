@@ -47,7 +47,7 @@ export default function FeaturesAndTestimonials() {
   return (
     <div className="w-full bg-white">
       {/* --- WHY CHOOSE US SECTION --- */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="pt-2 pb-8 sm:pt-4 sm:pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-2">
             Why Choose Paridhi Pharma?
@@ -61,17 +61,17 @@ export default function FeaturesAndTestimonials() {
           {FEATURES.map((feature, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center text-center p-8 rounded-3xl bg-slate-50 hover:bg-slate-100 transition duration-300"
+              className="flex flex-col items-center text-center p-5 rounded-3xl bg-slate-50 hover:bg-slate-100 transition duration-300"
             >
               <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${feature.iconBg}`}
+                className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${feature.iconBg}`}
               >
                 {feature.icon}
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-3">
+              <h3 className="text-base font-bold text-slate-900 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-sm text-slate-500 leading-relaxed">
+              <p className="text-[13px] text-slate-500 leading-relaxed">
                 {feature.description}
               </p>
             </div>
@@ -94,9 +94,9 @@ export default function FeaturesAndTestimonials() {
           {REVIEWS.map((review, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col"
+              className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition duration-300 flex flex-col"
             >
-              <div className="flex gap-1 mb-4">
+              <div className="flex gap-1 mb-3">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}

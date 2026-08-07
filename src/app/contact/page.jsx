@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Phone,
   Mail,
@@ -125,135 +126,71 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-card flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 shadow-inner">
+          <Link href="/consult" className="bg-white p-6 rounded-3xl border border-slate-200 shadow-card flex items-start gap-4 hover:border-medical-blue hover:shadow-lg transition cursor-pointer group">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 group-hover:bg-medical-blue group-hover:text-white transition flex items-center justify-center shrink-0 shadow-inner">
               <Stethoscope size={24} />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900 mb-1">
+              <h4 className="font-bold text-sm text-slate-900 mb-1 group-hover:text-medical-blue transition">
                 Doctor Consultation
               </h4>
               <p className="text-xs text-slate-500 mb-2">
                 Available for online prescription and medical advice
               </p>
-              <a
-                href="tel:+919123456789"
-                className="text-xs font-bold text-medical-blue hover:underline block"
+              <span
+                className="text-xs font-bold text-medical-blue group-hover:underline block"
               >
-                +91 91234 56789
-              </a>
+                Book Consultation Now &rarr;
+              </span>
             </div>
-          </div>
+          </Link>
         </div>
 
-        {/* Contact Form */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-card">
-          <h3 className="font-bold text-xl text-slate-900 mb-6 border-b border-slate-100 pb-4">
-            Send Us a Message
-          </h3>
-
-          {submitted && (
-            <div className="bg-green-50 border border-green-200 text-green-700 text-xs p-4 rounded-2xl mb-6 font-bold flex items-center gap-2">
-              <CheckCircle size={18} /> Sending message to support team...
+        {/* Doctor Consultant Section (Replaced Contact Form) */}
+        <div className="lg:col-span-7 bg-medical-dark rounded-3xl p-8 sm:p-12 shadow-card text-white relative overflow-hidden flex flex-col justify-center">
+          {/* Background Decorative Element */}
+          <div className="absolute right-0 top-0 w-64 h-64 bg-medical-blue/30 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 bg-white/10 w-max rounded-md py-1 px-3 mb-6 border border-white/10">
+               <Stethoscope size={14} className="text-medical-blue" />
+               <span className="text-xs font-bold">Doctor Consult</span>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Your Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter your name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-medical-blue focus:bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Phone Number *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="10-digit mobile number"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-medical-blue focus:bg-white"
-                />
-              </div>
+            
+            <h3 className="font-bold text-3xl sm:text-4xl text-white mb-4 leading-tight">
+              <span className="text-amber-400">Consult Certified Doctors</span><br/>
+              Online - 24/7 Access
+            </h3>
+            
+            <p className="text-blue-100 text-sm mb-8 max-w-md leading-relaxed">
+              Skip the waiting room. Get expert medical advice, digital prescriptions, and free follow-ups from top doctors starting at just ₹199.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <Link href="/consult" className="bg-medical-blue hover:bg-blue-600 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                Consult Now
+              </Link>
+              <a href="tel:+919123456789" className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3.5 px-6 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                <Phone size={16} /> Call Us
+              </a>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-medical-blue focus:bg-white"
-                />
+            {/* Features Row */}
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <CheckCircle size={14} className="text-green-400" />
+                </div>
+                <span className="text-xs font-medium text-blue-100">100% Private</span>
               </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Subject / Inquiry Type *
-                </label>
-                <select
-                  required
-                  value={form.subject}
-                  onChange={(e) =>
-                    setForm({ ...form, subject: e.target.value })
-                  }
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-medical-blue focus:bg-white font-medium text-slate-700"
-                >
-                  <option value="">Select Subject</option>
-                  <option value="Order Status">Order Tracking / Status</option>
-                  <option value="Prescription Inquiry">
-                    Prescription Verification
-                  </option>
-                  <option value="B2B Bulk Order">
-                    B2B Bulk Buying / Pharmacy Tie-up
-                  </option>
-                  <option value="Refund / Cancellation">
-                    Refund / Cancellation
-                  </option>
-                  <option value="Other">Other Inquiry</option>
-                </select>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <CheckCircle size={14} className="text-green-400" />
+                </div>
+                <span className="text-xs font-medium text-blue-100">Verified Doctors</span>
               </div>
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Your Message / Inquiry Details *
-              </label>
-              <textarea
-                rows={5}
-                required
-                placeholder="Provide detailed information regarding your inquiry or medicine requirements..."
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-medical-blue focus:bg-white resize-none"
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitted}
-              className="w-full bg-medical-blue hover:bg-blue-600 text-white font-bold py-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2 uppercase tracking-wider mt-4"
-            >
-              <Send size={16} /> {submitted ? "Sending..." : "Submit Inquiry"}
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

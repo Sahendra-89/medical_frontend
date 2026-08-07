@@ -76,18 +76,15 @@ const PrescriptionModal = ({ isOpen, onClose, onSuccess }) => {
     }
     setUploading(true);
     try {
-      const fileUrl = selectedFile
-        ? URL.createObjectURL(selectedFile)
-        : "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400";
-      const finalNotes = doctorNumber.trim()
-        ? `Doctor Number: ${doctorNumber}\n${notes}`
-        : notes;
-      const res = await uploadPrescription({
-        fileUrl,
-        patientName,
-        doctorName,
-        notes: finalNotes,
-      });
+      const res = await uploadPrescription(
+        {
+          patientName,
+          doctorName,
+          doctorNumber,
+          notes,
+        },
+        selectedFile
+      );
       setSuccessMsg(
         "Prescription uploaded successfully! Pharmacist approval pending.",
       );

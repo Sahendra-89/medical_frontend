@@ -356,15 +356,62 @@ export const updateAmbulanceStatus = async (id, status) => {
 
 // ─── Prescriptions ────────────────────────────────────────────────────────────
 
-export const uploadPrescription = async (prescriptionData) => {
+export const uploadPrescription = async (prescriptionData, file = null) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
+
+    let imageUrl = prescriptionData.image_url || prescriptionData.fileUrl || null;
+    let imageData = prescriptionData.image_data || null;
+
+    if (file) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `public/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('prescriptions')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.warn("Storage upload failed:", uploadError);
+        throw new Error("Storage upload failed: " + uploadError.message + ". Please ensure the 'prescriptions' bucket exists and is public.");
+      } else {
+        const { data: { publicUrl } } = supabase.storage
+          .from('prescriptions')
+          .getPublicUrl(filePath);
+        imageUrl = publicUrl;
+      }
+    }
+
+    const dbPayload = {
+      user_id: user?.id || null,
+      patient_name: prescriptionData.patientName || prescriptionData.patient_name,
+      notes: prescriptionData.notes,
+      image_url: imageUrl,
+      image_data: imageData,
+      approval_status: prescriptionData.approval_status || 'pending',
+    };
+
+    const docName = prescriptionData.doctorName || prescriptionData.doctor_name;
+    if (docName) {
+      dbPayload.doctor_name = docName;
+    }
+
+    const docNum = prescriptionData.doctorNumber || prescriptionData.doctor_number;
+    if (docNum) {
+      dbPayload.doctor_number = docNum;
+    }
+
     const { data, error } = await supabase
       .from('prescriptions')
-      .insert([{ ...prescriptionData, user_id: user?.id || null }])
-      .select()
-      .single();
-    if (error) throw error;
+      .insert([dbPayload]);
+
+    if (error) {
+      if (error.code === '42703' && error.message.includes('doctor_number')) {
+        throw new Error("Missing 'doctor_number' column in database. Please run the ALTER TABLE script.");
+      }
+      throw error;
+    }
     return ok({ prescription: data, message: 'Prescription uploaded successfully' });
   } catch (err) {
     return fail(err);

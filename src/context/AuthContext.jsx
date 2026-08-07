@@ -106,14 +106,61 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const otpLoginSend = async (identifier) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier })
+      });
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      return { success: false, message: 'Network error.' };
+    }
+  };
+
+  const otpLoginVerify = async (identifier, otp) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, otp })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+      }
+      return data;
+    } catch (err) {
+      return { success: false, message: 'Network error.' };
+    }
+  };
+
+  const otpLoginResend = async (identifier) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier })
+      });
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      return { success: false, message: 'Network error.' };
+    }
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('token');
     setUser(null);
     window.location.href = '/';
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, otpLoginSend, otpLoginVerify, otpLoginResend }}>
       {!loading && children}
     </AuthContext.Provider>
   );

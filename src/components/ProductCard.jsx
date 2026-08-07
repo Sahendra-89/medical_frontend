@@ -1,11 +1,12 @@
 "use client";
 
-import React from 'react';
+import React, { memo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ShoppingCart, FileText, CheckCircle, AlertCircle, Zap, Star, Shield } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-const ProductCard = ({ product }) => {
+const ProductCard = memo(({ product }) => {
   const { addToCart, wishlist, toggleWishlist } = useCart();
   const isWishlisted = wishlist.some(item => item.id === product.id);
   const savings = product.mrp && product.price ? +(product.mrp - product.price).toFixed(2) : 0;
@@ -21,10 +22,12 @@ const ProductCard = ({ product }) => {
       {/* ── Image Area ── */}
       <div className="relative bg-gradient-to-br from-slate-50 to-blue-50/30 overflow-hidden" style={{ paddingTop: '72%' }}>
         <Link href={`/shop/${product.id}`} className="absolute inset-0 p-4 flex items-center justify-center">
-          <img
+          <Image
             src={product.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400'}
             alt={product.name}
-            className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-md"
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+            className="object-contain p-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-md"
           />
         </Link>
 
@@ -146,6 +149,8 @@ const ProductCard = ({ product }) => {
       )}
     </div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;

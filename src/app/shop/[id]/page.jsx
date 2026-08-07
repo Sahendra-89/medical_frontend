@@ -128,14 +128,15 @@ export default function ProductDetailPage() {
       {/* Main Detail Section */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-card p-6 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Product Image */}
-        <div className="lg:col-span-5 relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex items-center justify-center p-8 group">
+        <div className="lg:col-span-5 relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex items-center justify-center p-8 group aspect-square">
           <img
             src={
               product.image ||
               "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400"
             }
             alt={product.name}
-            className="w-full h-auto max-h-96 object-contain group-hover:scale-105 transition duration-500"
+            fetchPriority="high"
+            className="w-full h-full max-h-96 object-contain group-hover:scale-105 transition duration-500"
           />
 
           {product.discount_percent > 0 && (
@@ -174,12 +175,12 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Title */}
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug mb-3">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug mb-2">
               {product.name}
             </h1>
 
             {/* Ratings & Reviews */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-0.5 text-amber-400">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -202,14 +203,14 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Pricing */}
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-slate-900">
+                  <span className="text-2xl font-bold text-slate-900">
                     ₹{product.price}
                   </span>
                   {product.discount_percent > 0 && (
-                    <span className="text-base text-slate-400 line-through font-bold">
+                    <span className="text-sm text-slate-400 line-through font-bold">
                       MRP ₹{product.mrp}
                     </span>
                   )}
@@ -241,7 +242,7 @@ export default function ProductDetailPage() {
 
             {/* Prescription Requirement Box */}
             {product.prescription_required && (
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 mb-6 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 space-y-3">
                 <div className="flex items-start gap-3">
                   <FileText
                     size={24}
@@ -298,8 +299,8 @@ export default function ProductDetailPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                   <h4 className="font-bold text-xs text-slate-900 mb-1 flex items-center gap-1.5">
                     <CheckCircle size={14} className="text-medical-blue" /> Uses
                     & Instructions
@@ -310,7 +311,7 @@ export default function ProductDetailPage() {
                   </p>
                 </div>
 
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                   <h4 className="font-bold text-xs text-slate-900 mb-1 flex items-center gap-1.5">
                     <AlertCircle size={14} className="text-amber-600" />{" "}
                     Potential Side Effects
@@ -325,8 +326,8 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Add to Cart Actions */}
-          <div className="pt-8 border-t border-slate-200 flex flex-wrap items-center gap-4 mt-8">
-            <div className="flex items-center bg-slate-100 rounded-2xl p-1 border border-slate-200 shadow-inner">
+          <div className="pt-6 border-t border-slate-200 flex flex-wrap items-center gap-4 mt-6">
+            <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200 shadow-inner">
               <button
                 onClick={() => setQty(Math.max(1, qty - 1))}
                 className="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition"

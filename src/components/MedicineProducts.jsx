@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShoppingCart,
   Heart,
@@ -18,7 +19,7 @@ import { getProducts } from "../lib/api";
 
 
 // ── Individual Product Card ────────────────────────────────────────────────
-const MedicineCard = ({ product }) => {
+const MedicineCard = memo(({ product }) => {
   const { addToCart, wishlist, toggleWishlist } = useCart();
   const isWishlisted = wishlist.some((item) => item.id === product.id);
   const [added, setAdded] = useState(false);
@@ -52,17 +53,15 @@ const MedicineCard = ({ product }) => {
           href={`/shop/${product.id}`}
           className="absolute inset-0 p-4 flex items-center justify-center bg-slate-50"
         >
-          <img
+          <Image
             src={
               product.image ||
               "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400"
             }
             alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
-            onError={(e) => {
-              e.target.src =
-                "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400";
-            }}
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+            className="object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
           />
         </Link>
 
@@ -109,7 +108,7 @@ const MedicineCard = ({ product }) => {
       </div>
 
       {/* ── Content Section ── */}
-      <div className="p-4 flex-1 flex flex-col gap-2">
+      <div className="p-3 flex-1 flex flex-col gap-1.5">
         {/* Brand */}
         <span className="inline-block text-[9px] font-black text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full uppercase tracking-wider w-fit">
           {product.brand || "Generic"}
@@ -124,7 +123,7 @@ const MedicineCard = ({ product }) => {
 
         {/* ── USAGE SECTION ── */}
         {(product.usage || product.usage_instructions) && (
-          <div className="flex items-start gap-1.5 bg-slate-100 rounded-xl px-2.5 py-2 border border-slate-200">
+          <div className="flex items-start gap-1.5 bg-slate-100 rounded-xl px-2 py-1.5 border border-slate-200">
             <Info size={10} className="text-slate-500 flex-shrink-0 mt-0.5" />
             <p className="text-[10px] text-black font-semibold leading-snug line-clamp-2">
               {product.usage || product.usage_instructions}
@@ -133,7 +132,7 @@ const MedicineCard = ({ product }) => {
         )}
 
         {/* Description */}
-        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
+        <p className="text-[10px] text-slate-600 line-clamp-2 leading-snug">
           {product.description || "Premium quality healthcare product."}
         </p>
 
@@ -184,7 +183,7 @@ const MedicineCard = ({ product }) => {
         </div>
 
         {/* ── Price + Add to Cart ── */}
-        <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="mt-auto pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="font-black text-lg text-black">
@@ -206,7 +205,7 @@ const MedicineCard = ({ product }) => {
           <button
             onClick={handleAddToCart}
             disabled={product.stock <= 0}
-            className={`flex items-center gap-1.5 font-bold py-2 px-4 rounded-xl text-[11px] transition-all duration-300 shadow-sm flex-shrink-0 ${
+            className={`flex items-center gap-1.5 font-bold py-1.5 px-3 rounded-xl text-[11px] transition-all duration-300 shadow-sm flex-shrink-0 ${
               product.stock <= 0
                 ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                 : added
@@ -228,13 +227,15 @@ const MedicineCard = ({ product }) => {
       </div>
 
       {/* Footer trust bar */}
-      <div className="px-4 pb-3 flex items-center gap-1.5 text-[9px] text-slate-600 font-medium border-t border-slate-100 pt-2">
+      <div className="px-3 pb-2 flex items-center gap-1.5 text-[9px] text-slate-600 font-medium border-t border-slate-100 pt-1.5">
         <Shield size={9} className="text-emerald-500" />
         100% Genuine · Fast Delivery
       </div>
     </div>
   );
-};
+});
+
+MedicineCard.displayName = 'MedicineCard';
 
 const MedicineProducts = () => {
   const [products, setProducts] = useState([]);
@@ -266,7 +267,7 @@ const MedicineProducts = () => {
         );
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden">
+    <section className="pt-4 pb-4 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-100/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />

@@ -10,7 +10,9 @@ export default function PrescriptionTab({ prescriptions, handleApproveRx }) {
         {prescriptions.map(rx => (
           <div key={rx.id} className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <img src={rx.file_url} alt="Rx" className="w-20 h-20 object-cover rounded-xl border border-slate-200 shrink-0" />
+              <a href={rx.image_url || rx.image_data || rx.file_url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                <img src={rx.image_url || rx.image_data || rx.file_url || 'https://images.unsplash.com/photo-1585435557343-3b092031a831?w=200'} alt="Rx" className="w-20 h-20 object-cover rounded-xl border border-slate-200 shrink-0 hover:opacity-80 transition" />
+              </a>
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-sm text-slate-900">Prescription #{rx.id}</h4>

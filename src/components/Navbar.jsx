@@ -31,6 +31,28 @@ import {
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { getCategories, getProducts } from "../lib/api";
+import OtpLoginModal from "./OtpLoginModal";
+
+const WishlistBadge = () => {
+  const { wishlist } = useCart();
+  if (!wishlist || wishlist.length === 0) return null;
+  return (
+    <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center font-bold">
+      {wishlist.length}
+    </span>
+  );
+};
+
+const CartBadge = () => {
+  const { cart } = useCart();
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  if (cartCount === 0) return null;
+  return (
+    <span className="bg-medical-blue text-white group-hover:bg-white group-hover:text-medical-blue rounded-full w-5 h-5 flex items-center justify-center font-black text-[10px] shadow transition-colors">
+      {cartCount}
+    </span>
+  );
+};
 
 const OFFERS = [
   "🎉 Use code FLAT100 → ₹100 OFF on orders above ₹999",
@@ -59,7 +81,7 @@ const NAV_LINKS = [
   },
   {
     label: "Doctor Consult",
-    href: "/contact",
+    href: "/consult",
     icon: <Stethoscope size={14} />,
     dot: true,
     mega: false,
@@ -306,7 +328,8 @@ const HEALTHCARE_MEGA_MENU = {
 };
 
 const Navbar = () => {
-  const [search, setSearch] = useState("");
+  const searchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -314,13 +337,12 @@ const Navbar = () => {
   const [dynamicCategories, setDynamicCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const profileRef = useRef(null);
 
   const dropdownRef = useRef(null);
   const router = useRouter();
-  const { cart, wishlist } = useCart();
   const { user, logout } = useAuth();
-  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -345,6 +367,18 @@ const Navbar = () => {
 
   // Close profile dropdown on outside click
   useEffect(() => {
+    // Auto-open login drawer on first visit if not logged in
+    const hasSeenLogin = sessionStorage.getItem("hasSeenLoginDrawer");
+    if (!user && !hasSeenLogin) {
+      const tmr = setTimeout(() => {
+        setShowLoginModal(true);
+        sessionStorage.setItem("hasSeenLoginDrawer", "true");
+      }, 800);
+      return () => clearTimeout(tmr);
+    }
+  }, [user]);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
@@ -365,10 +399,11 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e, isMobile = false) => {
     e.preventDefault();
-    if (search.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(search)}`);
+    const query = isMobile ? mobileSearchRef.current?.value : searchRef.current?.value;
+    if (query && query.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(query)}`);
       setMobileMenu(false);
     }
   };
@@ -386,12 +421,18 @@ const Navbar = () => {
           <img
             src="/logo.png"
             alt="Paridhi Pharma"
-            className="h-14 sm:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            width="240"
+            height="96"
+            fetchPriority="high"
+            className="h-20 sm:h-24 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
 
         {/* Location Pill */}
-        <button className="hidden lg:flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 font-medium hover:border-medical-blue hover:text-medical-blue transition flex-shrink-0">
+        <button 
+          onClick={() => { if (!user) setShowLoginModal(true); }}
+          className="hidden lg:flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 font-medium hover:border-medical-blue hover:text-medical-blue transition flex-shrink-0"
+        >
           <MapPin size={13} className="text-medical-blue" />
           <span>Gurgaon 122001</span>
           <ChevronDown size={12} />
@@ -410,8 +451,7 @@ const Navbar = () => {
             <input
               type="text"
               placeholder='Search medicines, brands (e.g. "Crocin", "Cipla")…'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              ref={searchRef}
               className="w-full bg-transparent py-2 px-3 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none"
             />
             <button
@@ -430,24 +470,16 @@ const Navbar = () => {
             className="relative p-2 text-slate-500 hover:text-red-500 transition"
           >
             <Heart size={21} />
-            {wishlist.length > 0 && (
-              <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center font-bold">
-                {wishlist.length}
-              </span>
-            )}
+            <WishlistBadge />
           </Link>
 
           <Link
             href="/cart"
-            className="relative flex items-center gap-1.5 bg-medical-blue text-white font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-700 transition shadow-premium"
+            className="relative flex items-center gap-1.5 text-xs font-bold text-medical-blue border border-medical-blue/30 bg-blue-50 px-3 py-2 rounded-xl hover:bg-medical-blue hover:text-white transition group"
           >
             <ShoppingCart size={16} />
             <span className="hidden sm:inline">Cart</span>
-            {cartCount > 0 && (
-              <span className="bg-white text-medical-blue rounded-full w-5 h-5 flex items-center justify-center font-black text-[10px] shadow">
-                {cartCount}
-              </span>
-            )}
+            <CartBadge />
           </Link>
 
           {user ? (
@@ -524,12 +556,12 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link
-              href="/auth"
+            <button
+              onClick={() => setShowLoginModal(true)}
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-medical-blue border border-medical-blue/30 bg-blue-50 px-3 py-2 rounded-xl hover:bg-medical-blue hover:text-white transition"
             >
               <User size={14} /> Login
-            </Link>
+            </button>
           )}
 
           <button
@@ -567,11 +599,7 @@ const Navbar = () => {
                         : "text-slate-700 border-transparent hover:text-medical-blue hover:border-medical-blue hover:bg-slate-50"
                     }`}
                   >
-                    <span
-                      className={`transition-colors ${activeDropdown === "healthcare" ? "text-medical-blue" : "text-slate-400 group-hover:text-medical-blue"}`}
-                    >
-                      {link.icon}
-                    </span>
+
                     {link.label}
                     <ChevronDown
                       size={14}
@@ -593,11 +621,7 @@ const Navbar = () => {
                         link.emergency ? "bg-red-500 animate-pulse" : "bg-red-500 animate-pulse"
                       }`} />
                     )}
-                    <span className={`transition-colors ${
-                      link.emergency ? "text-red-500" : "text-slate-400 group-hover:text-medical-blue"
-                    }`}>
-                      {link.icon}
-                    </span>
+
                     {link.label}
                     {link.emergency && (
                       <span className="ml-1 text-[9px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">
@@ -748,6 +772,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
+      <OtpLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </header>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 const CartContext = createContext({});
 
@@ -19,12 +19,16 @@ export const CartProvider = ({ children }) => {
 
   const saveCart = (newCart) => {
     setCart(newCart);
-    localStorage.setItem('pp_cart', JSON.stringify(newCart));
+    setTimeout(() => {
+      localStorage.setItem('pp_cart', JSON.stringify(newCart));
+    }, 0);
   };
 
   const saveWishlist = (newWishlist) => {
     setWishlist(newWishlist);
-    localStorage.setItem('pp_wishlist', JSON.stringify(newWishlist));
+    setTimeout(() => {
+      localStorage.setItem('pp_wishlist', JSON.stringify(newWishlist));
+    }, 0);
   };
 
   const showToast = (message, type = 'success') => {
@@ -130,12 +134,14 @@ export const CartProvider = ({ children }) => {
 
   const hasPrescriptionItems = () => cart.some(item => item.prescription_required);
 
+  const value = useMemo(() => ({
+    cart, wishlist, coupon, toast,
+    addToCart, removeFromCart, updateQty, clearCart, toggleWishlist, applyCoupon,
+    getSubtotal, getMrpTotal, getDiscountAmount, getFinalTotal, hasPrescriptionItems
+  }), [cart, wishlist, coupon, toast]);
+
   return (
-    <CartContext.Provider value={{
-      cart, wishlist, coupon, toast,
-      addToCart, removeFromCart, updateQty, clearCart, toggleWishlist, applyCoupon,
-      getSubtotal, getMrpTotal, getDiscountAmount, getFinalTotal, hasPrescriptionItems
-    }}>
+    <CartContext.Provider value={value}>
       {children}
       {toast && (
         <div className={`fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-premium text-white font-medium animate-bounce ${

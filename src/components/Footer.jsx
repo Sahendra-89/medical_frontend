@@ -37,7 +37,7 @@ const SectionHeading = ({ children }) => (
    Reusable: Contact icon badge
 ───────────────────────────────────────── */
 const ContactBadge = ({ icon }) => (
-  <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+  <div className="w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
     {icon}
   </div>
 );
@@ -86,7 +86,7 @@ const Footer = () => {
               {[
                 [
                   "Drug Licence Details",
-                  "Form 20: RLF20HR2025001073, Form 20B: WLF20B2025HR000348, Form 21: RLF21HR2025001068, Form 21B: WLF21B2025HR000346, GSTIN: ( 06ESAPS2100F1Z9)",
+                  "Form 20: RLF20HR2025001073, Form 20B: WLF20B2025HR000348, Form 21: RLF21HR2025001068, Form 21B: WLF21B2025HR000346, GSTIN: (06ESAPS2100F1Z9)",
                 ],
               ].map(([k, v]) => (
                 <div
@@ -233,7 +233,7 @@ const Footer = () => {
             <SectionHeading>Contact &amp; Support</SectionHeading>
             <ul className="flex flex-col gap-3.5 list-none p-0 m-0">
               {/* Address */}
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-center gap-2.5">
                 <ContactBadge icon={<MapPin size={14} color="#2563eb" />} />
                 <span className="text-[13px] text-slate-500 leading-[1.65]">
                   Shop No. 4, VPO jharsa, Sector 39, Near Police Chowki
@@ -243,7 +243,7 @@ const Footer = () => {
               </li>
 
               {/* Phone */}
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-center gap-2.5">
                 <ContactBadge icon={<PhoneCall size={14} color="#2563eb" />} />
                 <div>
                   <a
@@ -262,7 +262,7 @@ const Footer = () => {
               </li>
 
               {/* Email */}
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-center gap-2.5">
                 <ContactBadge icon={<Mail size={14} color="#2563eb" />} />
                 <a
                   href="mailto:paridhipharmasurgical@gmail.com"
@@ -273,7 +273,7 @@ const Footer = () => {
               </li>
 
               {/* Hours */}
-              <li className="flex items-start gap-2.5">
+              <li className="flex items-center gap-2.5">
                 <ContactBadge icon={<Clock size={14} color="#2563eb" />} />
                 <span className="text-[13px] text-slate-500 leading-[1.65]">
                   24/7 Online &nbsp;·&nbsp; Store: 8 AM – 10 PM

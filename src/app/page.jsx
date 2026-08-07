@@ -9,8 +9,10 @@ import {
 import { getProducts } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import MedicineProducts from '../components/MedicineProducts';
-import FeaturesAndTestimonials from '../components/FeaturesAndTestimonials';
 import PrescriptionModal from '../components/PrescriptionModal';
+import dynamic from 'next/dynamic';
+
+const FeaturesAndTestimonials = dynamic(() => import('../components/FeaturesAndTestimonials'), { ssr: false });
 
 const HOME_ICONS = [
   { img: '💊', title: 'Medicine', sub: 'SAVE 27%', link: '/shop?category=medicine' },
@@ -26,7 +28,7 @@ const HOME_ICONS = [
 
 
 export default function HomePage() {
-  const [search, setSearch] = useState('');
+  const searchRef = React.useRef(null);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,13 +74,14 @@ export default function HomePage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (search.trim()) router.push(`/shop?search=${encodeURIComponent(search)}`);
+    const query = searchRef.current?.value || '';
+    if (query.trim()) router.push(`/shop?search=${encodeURIComponent(query)}`);
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* ── SEARCH & ICONS SECTION ── */}
-      <section className="pt-8 sm:pt-10 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <section className="pt-8 sm:pt-10 pb-2 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Title and Upload Link */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800">
@@ -94,14 +97,14 @@ export default function HomePage() {
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto mb-10">
+        <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto mb-2">
           <div className="flex items-center bg-white border border-slate-300 rounded-full shadow-sm overflow-hidden hover:shadow-md transition pl-3 sm:pl-4">
             <Search size={18} className="text-slate-400 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search for Medicine, Brands..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              ref={searchRef}
+              defaultValue=""
               className="w-full py-3 sm:py-3.5 px-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
             />
             <button type="submit" className="bg-black hover:bg-slate-800 text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 m-1 rounded-full text-sm transition flex-shrink-0">
@@ -115,7 +118,7 @@ export default function HomePage() {
       <MedicineProducts />
 
       {/* ── ALL PRODUCTS CATALOG ── */}
-      <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
+      <section className="pt-6 pb-4 sm:pt-8 sm:pb-6 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-6 sm:mb-8 gap-2">
             <div>

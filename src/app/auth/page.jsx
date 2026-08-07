@@ -24,20 +24,52 @@ const inp =
 
 // ─── Login Form ──────────────────────────────────────────
 function LoginForm({ onSwitch, onSuccess }) {
-  const { login } = useAuth();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [showPw, setShowPw] = useState(false);
+  const { login, otpLoginSend, otpLoginVerify, otpLoginResend } = useAuth();
+  const [otpStep, setOtpStep] = useState("request"); // "request" | "verify"
+  
+  const [form, setForm] = useState({ identifier: "", otp: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [timer, setTimer] = useState(0);
 
-  const handle = async (e) => {
+  useEffect(() => {
+    let intval;
+    if (timer > 0) intval = setInterval(() => setTimer(t => t - 1), 1000);
+    return () => clearInterval(intval);
+  }, [timer]);
+
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const res = await login(form.email, form.password);
+    const res = await otpLoginSend(form.identifier);
+    setLoading(false);
+    if (res.success) {
+      setOtpStep("verify");
+      setTimer(60);
+    } else {
+      setError(res.message || "Failed to send OTP.");
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const res = await otpLoginVerify(form.identifier, form.otp);
     setLoading(false);
     if (res.success) onSuccess(res.user);
-    else setError(res.message || "Invalid email or password.");
+    else setError(res.message || "Invalid OTP.");
+  };
+
+  const handleResendOtp = async () => {
+    if (timer > 0) return;
+    setError("");
+    setLoading(true);
+    const res = await otpLoginResend(form.identifier);
+    setLoading(false);
+    if (res.success) setTimer(60);
+    else setError(res.message || "Failed to resend OTP.");
   };
 
   return (
@@ -52,6 +84,8 @@ function LoginForm({ onSwitch, onSuccess }) {
         </p>
       </div>
 
+
+
       {error && (
         <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-xs px-4 py-3 rounded-xl mb-5 font-medium">
           <AlertCircle size={14} className="shrink-0 mt-0.5" />
@@ -59,80 +93,99 @@ function LoginForm({ onSwitch, onSuccess }) {
         </div>
       )}
 
-      <form onSubmit={handle} className="space-y-4">
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
-            Email Address
-          </label>
-          <div className="relative">
-            <Mail
-              size={15}
-              className="absolute left-3.5 top-3.5 text-slate-400"
-            />
-            <input
-              type="email"
-              required
-              placeholder="name@example.com"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className={`${inp} pl-10`}
-            />
+      {otpStep === "request" && (
+        <form onSubmit={handleSendOtp} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Email or Mobile Number
+            </label>
+            <div className="relative">
+              <User size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <input
+                type="text"
+                required
+                placeholder="Enter Email or Phone"
+                value={form.identifier}
+                onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+                className={`${inp} pl-10`}
+              />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
-            Password
-          </label>
-          <div className="relative">
-            <Lock
-              size={15}
-              className="absolute left-3.5 top-3.5 text-slate-400"
-            />
-            <input
-              type={showPw ? "text" : "password"}
-              required
-              placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className={`${inp} pl-10 pr-11`}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPw(!showPw)}
-              className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600"
-            >
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-          <div className="text-right mt-1.5">
-            <button
-              type="button"
-              onClick={() => onSwitch("forgot")}
-              className="text-xs text-blue-600 hover:underline font-semibold"
-            >
-              Forgot Password?
-            </button>
-          </div>
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Sending OTP...
+              </>
+            ) : (
+              <>
+                <Mail size={16} />
+                Send OTP
+              </>
+            )}
+          </button>
+        </form>
+      )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-60"
-        >
-          {loading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Logging in...
-            </>
-          ) : (
-            <>
-              <ShieldCheck size={16} />
-              Login to Account
-            </>
-          )}
-        </button>
-      </form>
+      {otpStep === "verify" && (
+        <form onSubmit={handleVerifyOtp} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Enter 6-Digit OTP
+            </label>
+            <div className="relative">
+              <KeyRound size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <input
+                type="text"
+                required
+                maxLength={6}
+                placeholder="123456"
+                value={form.otp}
+                onChange={(e) => setForm({ ...form, otp: e.target.value.replace(/[^0-9]/g, "") })}
+                className={`${inp} pl-10 tracking-[0.25em] font-black`}
+              />
+            </div>
+            <div className="text-right mt-1.5">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={timer > 0 || loading}
+                className="text-xs text-blue-600 hover:underline font-semibold disabled:opacity-50 disabled:no-underline"
+              >
+                {timer > 0 ? `Resend OTP in ${timer}s` : 'Resend OTP'}
+              </button>
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={loading || form.otp.length !== 6}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Verifying...
+              </>
+            ) : (
+              <>
+                <ShieldCheck size={16} />
+                Verify & Login
+              </>
+            )}
+          </button>
+          <button
+             type="button"
+             onClick={() => setOtpStep("request")}
+             className="w-full text-xs text-slate-500 hover:text-blue-600 font-semibold mt-2"
+          >
+             Change Email/Mobile
+          </button>
+        </form>
+      )}
 
       <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-600">
         Don't have an account?{" "}

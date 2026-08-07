@@ -2,7 +2,11 @@ import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import dynamic from 'next/dynamic';
+
+const Footer = dynamic(() => import('../components/Footer'), {
+  ssr: true,
+});
 
 export const metadata = {
   metadataBase: new URL('https://www.pridhipharma.in'),
@@ -122,8 +126,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
-        {/* JSON-LD Structured Data for Google Rich Results */}
+      <head>
+        <link rel="preconnect" href="http://localhost:5000" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(pharmacySchema) }}
@@ -132,6 +137,8 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
+      </head>
+      <body className="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
         <AuthProvider>
           <CartProvider>
             <Navbar />

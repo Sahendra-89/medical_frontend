@@ -2,7 +2,23 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
-const CartContext = createContext({});
+const CartContext = createContext({
+  cart: [],
+  wishlist: [],
+  coupon: null,
+  toast: null,
+  addToCart: () => {},
+  removeFromCart: () => {},
+  updateQty: () => {},
+  clearCart: () => {},
+  toggleWishlist: () => {},
+  applyCoupon: () => {},
+  getSubtotal: () => 0,
+  getMrpTotal: () => 0,
+  getDiscountAmount: () => 0,
+  getFinalTotal: () => 0,
+  hasPrescriptionItems: () => false,
+});
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
@@ -11,10 +27,14 @@ export const CartProvider = ({ children }) => {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('pp_cart');
-    const storedWishlist = localStorage.getItem('pp_wishlist');
-    if (storedCart) setCart(JSON.parse(storedCart));
-    if (storedWishlist) setWishlist(JSON.parse(storedWishlist));
+    try {
+      const storedCart = localStorage.getItem('pp_cart');
+      const storedWishlist = localStorage.getItem('pp_wishlist');
+      if (storedCart) setCart(JSON.parse(storedCart) || []);
+      if (storedWishlist) setWishlist(JSON.parse(storedWishlist) || []);
+    } catch (err) {
+      console.error("Failed to load cart/wishlist from localStorage:", err);
+    }
   }, []);
 
   const saveCart = (newCart) => {

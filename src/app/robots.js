@@ -2,7 +2,7 @@
 // Next.js will serve this at /robots.txt
 
 export default function robots() {
-  const baseUrl = 'https://www.pridhipharma.in';
+  const baseUrl = 'https://www.paridhipharma.in';
 
   return {
     rules: [

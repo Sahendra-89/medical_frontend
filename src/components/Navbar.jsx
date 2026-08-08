@@ -707,12 +707,11 @@ const Navbar = () => {
       {/* ── Mobile Menu ── */}
       {mobileMenu && (
         <div className="md:hidden border-t border-slate-100 bg-white px-4 py-4 flex flex-col gap-3 shadow-lg animate-fade-in">
-          <form onSubmit={handleSearch} className="flex items-center relative">
+          <form onSubmit={(e) => handleSearch(e, true)} className="flex items-center relative">
             <input
+              ref={mobileSearchRef}
               type="text"
               placeholder="Search medicines..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-4 pr-10 text-sm focus:outline-none focus:border-medical-blue"
             />
             <button

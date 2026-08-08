@@ -53,10 +53,9 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getProducts({});
+        const res = await getProducts({ is_featured: false });
         const all = res.products || [];
-        // Skip first 8 items (shown in featured section) and reverse to show newly added items first
-        setAllProducts(all.length > 8 ? all.slice(8).reverse() : [...all].reverse());
+        setAllProducts([...all].reverse());
       } catch (err) {
         console.error(err);
         setAllProducts([]);

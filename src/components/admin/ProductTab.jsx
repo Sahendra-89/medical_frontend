@@ -310,7 +310,7 @@ export default function ProductTab() {
             <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
               <input type="checkbox" checked={prodForm.is_featured} onChange={e => setProdForm(f => ({ ...f, is_featured: e.target.checked }))} className="w-4 h-4 rounded accent-blue-500" />
               <Zap size={13} className="text-blue-500" />
-              <span>Featured (New Launch)</span>
+              <span>Show in "Shop Top Medicines" (Featured) <span className="text-[10px] text-slate-400 font-normal">(If unchecked, it goes to "Explore Our Catalog")</span></span>
             </label>
             <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
               <input type="checkbox" checked={prodForm.is_bestseller} onChange={e => setProdForm(f => ({ ...f, is_bestseller: e.target.checked }))} className="w-4 h-4 rounded accent-emerald-500" />
@@ -411,7 +411,15 @@ export default function ProductTab() {
                   </td>
                   <td className="p-4">
                     <div className="flex gap-1 flex-wrap">
-                      {p.is_featured && <span className="bg-blue-100 text-blue-600 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5"><Zap size={9} />Featured</span>}
+                      {p.is_featured ? (
+                        <span className="bg-blue-100 text-blue-600 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5" title="Displays in Shop Top Medicines section">
+                          <Zap size={9} /> Top Medicines
+                        </span>
+                      ) : (
+                        <span className="bg-slate-100 text-slate-600 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5" title="Displays in Explore Our Catalog section">
+                          Catalog
+                        </span>
+                      )}
                       {p.is_bestseller && <span className="bg-emerald-100 text-emerald-600 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-0.5"><Star size={9} />Best</span>}
                       {p.prescription_required && <span className="bg-amber-100 text-amber-600 text-[9px] font-black px-2 py-0.5 rounded-full">Rx</span>}
                     </div>

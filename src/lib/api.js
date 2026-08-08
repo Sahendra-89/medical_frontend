@@ -26,7 +26,10 @@ export const getProducts = async (params = {}) => {
         `name.ilike.%${params.search}%,brand.ilike.%${params.search}%,description.ilike.%${params.search}%`
       );
     }
-    if (params.is_featured) pQuery = pQuery.eq('is_featured', true);
+    if (params.is_featured !== undefined) {
+      const isFeat = params.is_featured === true || params.is_featured === 'true';
+      pQuery = pQuery.eq('is_featured', isFeat);
+    }
     if (params.is_bestseller) pQuery = pQuery.eq('is_bestseller', true);
 
     const { data: pData, error: pError } = await pQuery.order('id');
@@ -186,7 +189,8 @@ export const getCategories = async () => {
 
 export const createOrder = async (orderData) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes?.data?.user;
     if (!user) {
       throw new Error('Authentication required. Please log in to place an order.');
     }
@@ -237,7 +241,8 @@ export const getOrders = async () => {
 
 export const getUserOrders = async () => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes?.data?.user;
     if (!user) return ok({ orders: [] });
     const { data, error } = await supabase
       .from('orders')
@@ -358,7 +363,8 @@ export const updateAmbulanceStatus = async (id, status) => {
 
 export const uploadPrescription = async (prescriptionData, file = null) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const authRes = await supabase.auth.getUser();
+    const user = authRes?.data?.user;
 
     let imageUrl = prescriptionData.image_url || prescriptionData.fileUrl || null;
     let imageData = prescriptionData.image_data || null;

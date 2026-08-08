@@ -3,7 +3,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-const AuthContext = createContext({});
+const AuthContext = createContext({
+  user: null,
+  loading: true,
+  login: async () => ({ success: false }),
+  signup: async () => ({ success: false }),
+  logout: () => {},
+  otpLoginSend: async () => ({ success: false }),
+  otpLoginVerify: async () => ({ success: false }),
+  otpLoginResend: async () => ({ success: false }),
+});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,26 +20,43 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Restore session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        enrichUser(session.user).then(setUser);
-      }
+    try {
+      supabase.auth.getSession().then((res) => {
+        const session = res?.data?.session;
+        if (session?.user) {
+          enrichUser(session.user).then(setUser);
+        }
+        setLoading(false);
+      }).catch(err => {
+        console.error("Failed to get session:", err);
+        setLoading(false);
+      });
+    } catch (err) {
+      console.error("Failed to invoke getSession:", err);
       setLoading(false);
-    });
+    }
 
     // Listen for auth state changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          const enriched = await enrichUser(session.user);
-          setUser(enriched);
-        } else {
-          setUser(null);
+    let subscription;
+    try {
+      const authListener = supabase.auth.onAuthStateChange(
+        async (_event, session) => {
+          if (session?.user) {
+            const enriched = await enrichUser(session.user);
+            setUser(enriched);
+          } else {
+            setUser(null);
+          }
         }
-      }
-    );
+      );
+      subscription = authListener?.data?.subscription;
+    } catch (err) {
+      console.error("Failed to subscribe to auth state changes:", err);
+    }
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   /**
@@ -51,11 +77,15 @@ export const AuthProvider = ({ children }) => {
         role:   profile?.role   || authUser.user_metadata?.role  || 'user',
         status: profile?.status || 'active'
       };
-    } catch {
+    } catch (err) {
+      console.warn("Failed to enrich user profile:", err?.message || err);
       // Fallback: read role from JWT metadata so admin login still works
       return {
         ...authUser,
-        role: authUser.user_metadata?.role || 'user'
+        name:   authUser.user_metadata?.name  || '',
+        phone:  authUser.user_metadata?.phone || '',
+        role:   authUser.user_metadata?.role  || 'user',
+        status: 'active'
       };
     }
   };

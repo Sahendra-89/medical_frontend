@@ -240,12 +240,11 @@ MedicineCard.displayName = 'MedicineCard';
 const MedicineProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await getProducts({});
+        const res = await getProducts({ is_featured: true });
         setProducts(res.products || []);
       } catch {
         setProducts([]);
@@ -254,17 +253,6 @@ const MedicineProducts = () => {
       }
     })();
   }, []);
-
-  // Derive category tabs dynamically from actual DB data
-  const rawCats = [...new Set(products.map(p => p.category || p.category_id || '').filter(Boolean))];
-  const categories = ['All', ...rawCats.slice(0, 6)];
-
-  const filtered =
-    activeCategory === "All"
-      ? products
-      : products.filter((p) =>
-          (p.category || "").toLowerCase().includes(activeCategory.toLowerCase())
-        );
 
   return (
     <section className="pt-4 pb-4 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden">
@@ -302,23 +290,6 @@ const MedicineProducts = () => {
           </Link>
         </div>
 
-        {/* ── Category Filter Tabs ── */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 ${
-                activeCategory === cat
-                  ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200/50"
-                  : "bg-white text-slate-500 border-slate-200 hover:border-blue-300 hover:text-blue-600"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
         {/* ── Product Grid ── */}
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -334,14 +305,9 @@ const MedicineProducts = () => {
               Go to the <strong>Admin Dashboard → Products</strong> tab and add your first product — it will appear here instantly.
             </p>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-400">
-            <Pill size={40} className="mx-auto mb-3 opacity-30" />
-            <p className="font-semibold">No products found in this category.</p>
-          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {filtered.slice(0, 8).map((product) => (
+            {products.slice(0, 8).map((product) => (
               <MedicineCard key={product.id} product={product} />
             ))}
           </div>

@@ -3,6 +3,14 @@ import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import Navbar from "../components/Navbar";
 import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
+});
 
 const Footer = dynamic(() => import("../components/Footer"), {
   ssr: true,
@@ -12,18 +20,18 @@ export const metadata = {
   metadataBase: new URL("https://www.paridhipharma.in"),
 
   title: {
-    default: "Pridhi Pharma | Buy Medicines Online — Trusted Pharmacy India",
-    template: "%s | Pridhi Pharma",
+    default: "Paridhi Pharma | Buy Medicines Online — Trusted Pharmacy India",
+    template: "%s | Paridhi Pharma",
   },
 
   description:
-    "Pridhi Pharma — India's trusted online pharmacy. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products with fast delivery.",
+    "Paridhi Pharma — India's trusted online pharmacy. Order genuine medicines, upload prescriptions, shop healthcare devices & wellness products with fast delivery.",
 
   keywords:
-    "buy medicines online, online pharmacy India, Pridhi Pharma, genuine medicines, prescription medicines online, medical devices, pridhipharma.in",
+    "buy medicines online, online pharmacy India, Paridhi Pharma, genuine medicines, prescription medicines online, medical devices, paridhipharma.in",
 
   openGraph: {
-    title: "Pridhi Pharma | Buy Medicines Online",
+    title: "Paridhi Pharma | Buy Medicines Online",
     description:
       "Trusted online pharmacy with genuine medicines, fast delivery & licensed pharmacists.",
     url: "https://www.paridhipharma.in",
@@ -34,7 +42,7 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Pridhi Pharma | Buy Medicines Online",
+    title: "Paridhi Pharma | Buy Medicines Online",
     description:
       "Genuine medicines & healthcare devices — fast delivery across India.",
   },
@@ -143,8 +151,8 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={inter.variable}>
+      <body className={inter.className}>
         <AuthProvider>
           <CartProvider>
             <Navbar />

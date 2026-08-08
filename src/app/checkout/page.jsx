@@ -6,6 +6,33 @@ import { ShieldCheck, Truck, CreditCard, FileText, CheckCircle, ArrowRight, Lock
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { createOrder } from '../../lib/api';
+import { supabase } from '../../lib/supabase';
+
+// Helper to make authenticated requests to the backend API using native fetch
+const callBackend = async (endpoint, method, body = null) => {
+  const localToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const supabaseSession = await supabase.auth.getSession();
+  const token = localToken || supabaseSession?.data?.session?.access_token;
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const res = await fetch(`${baseUrl}${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null,
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    let errJson;
+    try { errJson = JSON.parse(errText); } catch { }
+    throw new Error(errJson?.message || errText || 'Request failed');
+  }
+  return res.json();
+};
 
 // Load Razorpay script dynamically
 const loadRazorpayScript = () =>
@@ -103,13 +130,13 @@ export default function CheckoutPage() {
     }
 
     try {
-      const payRes = await api.post('/orders/create-payment', {
+      const payRes = await callBackend('/orders/create-payment', 'POST', {
         amount: getFinalTotal(),
         currency: 'INR',
         receipt: placedOrder.id
       });
 
-      const { order: rzpOrder, key, mock } = payRes.data;
+      const { order: rzpOrder, key, mock } = payRes;
 
       // If mock keys, show error instead of auto-succeeding
       if (mock) {
@@ -128,7 +155,7 @@ export default function CheckoutPage() {
         order_id: rzpOrder.id,
         handler: async (response) => {
           try {
-            await api.post('/orders/verify-payment', {
+            await callBackend('/orders/verify-payment', 'POST', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
